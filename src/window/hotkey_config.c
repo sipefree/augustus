@@ -3,18 +3,21 @@
 #include "building/type.h"
 #include "core/hotkey_config.h"
 #include "core/image_group.h"
+#include "core/lang.h"
 #include "core/string.h"
 #include "graphics/generic_button.h"
 #include "graphics/graphics.h"
 #include "graphics/image.h"
 #include "graphics/lang_text.h"
 #include "graphics/panel.h"
+#include "graphics/screen.h"
 #include "graphics/scrollbar.h"
 #include "graphics/text.h"
 #include "graphics/window.h"
 #include "translation/translation.h"
 #include "window/config.h"
 #include "window/hotkey_editor.h"
+#include "window/plain_message_dialog.h"
 
 #define HOTKEY_HEADER -1
 #define TR_NONE -1
@@ -29,7 +32,7 @@ static void button_hotkey(int row, int is_alternative);
 static void button_reset_defaults(int param1, int param2);
 static void button_close(int save, int param2);
 
-static scrollbar_type scrollbar = {580, 72, 352, on_scroll};
+static scrollbar_type scrollbar = { 580, 72, 352, on_scroll };
 
 typedef struct {
     int action;
@@ -62,6 +65,7 @@ static hotkey_widget hotkey_widgets[] = {
     {HOTKEY_ROTATE_MAP_LEFT, TR_HOTKEY_ROTATE_MAP_LEFT},
     {HOTKEY_ROTATE_MAP_RIGHT, TR_HOTKEY_ROTATE_MAP_RIGHT},
     {HOTKEY_ROTATE_BUILDING, TR_HOTKEY_ROTATE_BUILDING},
+    {HOTKEY_ROTATE_BUILDING_BACK, TR_HOTKEY_ROTATE_BUILDING_BACK},
     {HOTKEY_HEADER, TR_HOTKEY_HEADER_BUILD},
     {HOTKEY_BUILD_CLONE, TR_HOTKEY_BUILD_CLONE},
     {HOTKEY_BUILD_CLEAR_LAND, TR_NONE, 68, 21},
@@ -81,6 +85,7 @@ static hotkey_widget hotkey_widgets[] = {
     {HOTKEY_BUILD_AQUEDUCT, TR_NONE, GROUP_BUILDINGS, BUILDING_AQUEDUCT},
     {HOTKEY_BUILD_FOUNTAIN, TR_NONE, GROUP_BUILDINGS, BUILDING_FOUNTAIN},
     {HOTKEY_BUILD_ROADBLOCK, TR_NONE, GROUP_BUILDINGS, BUILDING_ROADBLOCK},
+    {HOTKEY_UNDO, TR_NONE, GROUP_BUILDINGS, 1},
     {HOTKEY_HEADER, TR_HOTKEY_HEADER_ADVISORS},
     {HOTKEY_SHOW_ADVISOR_LABOR, TR_HOTKEY_SHOW_ADVISOR_LABOR},
     {HOTKEY_SHOW_ADVISOR_MILITARY, TR_HOTKEY_SHOW_ADVISOR_MILITARY},
@@ -88,15 +93,16 @@ static hotkey_widget hotkey_widgets[] = {
     {HOTKEY_SHOW_ADVISOR_RATINGS, TR_HOTKEY_SHOW_ADVISOR_RATINGS},
     {HOTKEY_SHOW_ADVISOR_TRADE, TR_HOTKEY_SHOW_ADVISOR_TRADE},
     {HOTKEY_SHOW_ADVISOR_POPULATION, TR_HOTKEY_SHOW_ADVISOR_POPULATION},
+    {HOTKEY_SHOW_ADVISOR_HOUSING, TR_HOTKEY_SHOW_ADVISOR_HOUSING},
     {HOTKEY_SHOW_ADVISOR_HEALTH, TR_HOTKEY_SHOW_ADVISOR_HEALTH},
     {HOTKEY_SHOW_ADVISOR_EDUCATION, TR_HOTKEY_SHOW_ADVISOR_EDUCATION},
     {HOTKEY_SHOW_ADVISOR_ENTERTAINMENT, TR_HOTKEY_SHOW_ADVISOR_ENTERTAINMENT},
     {HOTKEY_SHOW_ADVISOR_RELIGION, TR_HOTKEY_SHOW_ADVISOR_RELIGION},
     {HOTKEY_SHOW_ADVISOR_FINANCIAL, TR_HOTKEY_SHOW_ADVISOR_FINANCIAL},
     {HOTKEY_SHOW_ADVISOR_CHIEF, TR_HOTKEY_SHOW_ADVISOR_CHIEF},
-    {HOTKEY_SHOW_ADVISOR_HOUSING, TR_HOTKEY_SHOW_ADVISOR_HOUSING},
     {HOTKEY_HEADER, TR_HOTKEY_HEADER_OVERLAYS},
     {HOTKEY_TOGGLE_OVERLAY, TR_HOTKEY_TOGGLE_OVERLAY},
+    {HOTKEY_SHOW_OVERLAY_RELATIVE, TR_HOTKEY_SHOW_OVERLAY_RELATIVE},
     {HOTKEY_SHOW_OVERLAY_WATER, TR_HOTKEY_SHOW_OVERLAY_WATER},
     {HOTKEY_SHOW_OVERLAY_FIRE, TR_HOTKEY_SHOW_OVERLAY_FIRE},
     {HOTKEY_SHOW_OVERLAY_DAMAGE, TR_HOTKEY_SHOW_OVERLAY_DAMAGE},
@@ -121,40 +127,40 @@ static hotkey_widget hotkey_widgets[] = {
 #define HOTKEY_BTN_HEIGHT 22
 
 static generic_button hotkey_buttons[] = {
-    { HOTKEY_X_OFFSET_1, 80 + 24 * 0, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 0, 0 },
-    { HOTKEY_X_OFFSET_2, 80 + 24 * 0, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 0, 1 },
-    { HOTKEY_X_OFFSET_1, 80 + 24 * 1, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 1, 0 },
-    { HOTKEY_X_OFFSET_2, 80 + 24 * 1, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 1, 1 },
-    { HOTKEY_X_OFFSET_1, 80 + 24 * 2, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 2, 0 },
-    { HOTKEY_X_OFFSET_2, 80 + 24 * 2, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 2, 1 },
-    { HOTKEY_X_OFFSET_1, 80 + 24 * 3, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 3, 0 },
-    { HOTKEY_X_OFFSET_2, 80 + 24 * 3, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 3, 1 },
-    { HOTKEY_X_OFFSET_1, 80 + 24 * 4, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 4, 0 },
-    { HOTKEY_X_OFFSET_2, 80 + 24 * 4, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 4, 1 },
-    { HOTKEY_X_OFFSET_1, 80 + 24 * 5, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 5, 0 },
-    { HOTKEY_X_OFFSET_2, 80 + 24 * 5, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 5, 1 },
-    { HOTKEY_X_OFFSET_1, 80 + 24 * 6, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 6, 0 },
-    { HOTKEY_X_OFFSET_2, 80 + 24 * 6, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 6, 1 },
-    { HOTKEY_X_OFFSET_1, 80 + 24 * 7, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 7, 0 },
-    { HOTKEY_X_OFFSET_2, 80 + 24 * 7, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 7, 1 },
-    { HOTKEY_X_OFFSET_1, 80 + 24 * 8, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 8, 0 },
-    { HOTKEY_X_OFFSET_2, 80 + 24 * 8, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 8, 1 },
-    { HOTKEY_X_OFFSET_1, 80 + 24 * 9, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 9, 0 },
-    { HOTKEY_X_OFFSET_2, 80 + 24 * 9, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 9, 1 },
-    { HOTKEY_X_OFFSET_1, 80 + 24 * 10, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 10, 0 },
-    { HOTKEY_X_OFFSET_2, 80 + 24 * 10, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 10, 1 },
-    { HOTKEY_X_OFFSET_1, 80 + 24 * 11, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 11, 0 },
-    { HOTKEY_X_OFFSET_2, 80 + 24 * 11, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 11, 1 },
-    { HOTKEY_X_OFFSET_1, 80 + 24 * 12, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 12, 0 },
-    { HOTKEY_X_OFFSET_2, 80 + 24 * 12, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 12, 1 },
-    { HOTKEY_X_OFFSET_1, 80 + 24 * 13, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 13, 0 },
-    { HOTKEY_X_OFFSET_2, 80 + 24 * 13, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 13, 1 },
+    {HOTKEY_X_OFFSET_1, 80 + 24 * 0, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 0, 0},
+    {HOTKEY_X_OFFSET_2, 80 + 24 * 0, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 0, 1},
+    {HOTKEY_X_OFFSET_1, 80 + 24 * 1, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 1, 0},
+    {HOTKEY_X_OFFSET_2, 80 + 24 * 1, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 1, 1},
+    {HOTKEY_X_OFFSET_1, 80 + 24 * 2, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 2, 0},
+    {HOTKEY_X_OFFSET_2, 80 + 24 * 2, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 2, 1},
+    {HOTKEY_X_OFFSET_1, 80 + 24 * 3, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 3, 0},
+    {HOTKEY_X_OFFSET_2, 80 + 24 * 3, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 3, 1},
+    {HOTKEY_X_OFFSET_1, 80 + 24 * 4, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 4, 0},
+    {HOTKEY_X_OFFSET_2, 80 + 24 * 4, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 4, 1},
+    {HOTKEY_X_OFFSET_1, 80 + 24 * 5, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 5, 0},
+    {HOTKEY_X_OFFSET_2, 80 + 24 * 5, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 5, 1},
+    {HOTKEY_X_OFFSET_1, 80 + 24 * 6, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 6, 0},
+    {HOTKEY_X_OFFSET_2, 80 + 24 * 6, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 6, 1},
+    {HOTKEY_X_OFFSET_1, 80 + 24 * 7, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 7, 0},
+    {HOTKEY_X_OFFSET_2, 80 + 24 * 7, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 7, 1},
+    {HOTKEY_X_OFFSET_1, 80 + 24 * 8, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 8, 0},
+    {HOTKEY_X_OFFSET_2, 80 + 24 * 8, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 8, 1},
+    {HOTKEY_X_OFFSET_1, 80 + 24 * 9, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 9, 0},
+    {HOTKEY_X_OFFSET_2, 80 + 24 * 9, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 9, 1},
+    {HOTKEY_X_OFFSET_1, 80 + 24 * 10, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 10, 0},
+    {HOTKEY_X_OFFSET_2, 80 + 24 * 10, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 10, 1},
+    {HOTKEY_X_OFFSET_1, 80 + 24 * 11, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 11, 0},
+    {HOTKEY_X_OFFSET_2, 80 + 24 * 11, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 11, 1},
+    {HOTKEY_X_OFFSET_1, 80 + 24 * 12, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 12, 0},
+    {HOTKEY_X_OFFSET_2, 80 + 24 * 12, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 12, 1},
+    {HOTKEY_X_OFFSET_1, 80 + 24 * 13, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 13, 0},
+    {HOTKEY_X_OFFSET_2, 80 + 24 * 13, HOTKEY_BTN_WIDTH, HOTKEY_BTN_HEIGHT, button_hotkey, button_none, 13, 1},
 };
 
 static generic_button bottom_buttons[] = {
-    { 240, 430, 160, 30, button_reset_defaults, button_none },
-    { 410, 430, 100, 30, button_close, button_none, 0 },
-    { 520, 430, 100, 30, button_close, button_none, 1 },
+    {230, 430, 180, 30, button_reset_defaults, button_none},
+    {415, 430, 100, 30, button_close, button_none, 0},
+    {520, 430, 100, 30, button_close, button_none, 1},
 };
 
 static translation_key bottom_button_texts[] = {
@@ -174,7 +180,7 @@ static void init(void)
     scrollbar_init(&scrollbar, 0, sizeof(hotkey_widgets) / sizeof(hotkey_widget) - NUM_VISIBLE_OPTIONS);
 
     for (int i = 0; i < HOTKEY_MAX_ITEMS; i++) {
-        hotkey_mapping empty = {KEY_NONE, KEY_MOD_NONE, i};
+        hotkey_mapping empty = { KEY_TYPE_NONE, KEY_MOD_NONE, i };
 
         const hotkey_mapping *mapping = hotkey_for_action(i, 0);
         data.mappings[i][0] = mapping ? *mapping : empty;
@@ -188,7 +194,7 @@ static void draw_background(void)
 {
     graphics_clear_screen(CANVAS_UI);
 
-    image_draw_fullscreen_background(image_group(GROUP_INTERMEZZO_BACKGROUND) + 5);
+    window_draw_underlying_window();
 
     graphics_in_dialog();
     outer_panel_draw(0, 0, 40, 30);
@@ -282,14 +288,57 @@ static void handle_input(const mouse *m, const hotkeys *h)
     handled |= generic_buttons_handle_mouse(m_dialog, 0, 0,
         bottom_buttons, NUM_BOTTOM_BUTTONS, &data.bottom_focus_button);
     if (!handled && (m->right.went_up || h->escape_pressed)) {
-        window_config_show();
+        window_go_back();
     }
+}
+
+static const uint8_t *hotkey_action_name_for(hotkey_action action)
+{
+    const uint8_t *name = 0;
+    for (int i = 0; i < NUM_VISIBLE_OPTIONS + scrollbar.max_scroll_position; i++) {
+        hotkey_widget *widget = &hotkey_widgets[i];
+        if (widget->action == action) {
+            if (widget->name_translation != TR_NONE) {
+                name = translation_for(widget->name_translation);
+            } else {
+                name = lang_get_string(widget->name_text_group, widget->name_text_id);
+            }
+            break;
+        }
+    }
+    return name;
 }
 
 static void set_hotkey(hotkey_action action, int index, key_type key, key_modifier_type modifiers)
 {
-    data.mappings[action][index].key = key;
-    data.mappings[action][index].modifiers = modifiers;
+    int is_duplicate_hotkey = 0;
+    // check if new key combination already assigned to another action
+    if (key != KEY_TYPE_NONE) {
+        for (int test_action = 0; test_action < HOTKEY_MAX_ITEMS; test_action++) {
+            for (int test_index = 0; test_index < 2; test_index++) {
+                if (data.mappings[test_action][test_index].key == key
+                    && data.mappings[test_action][test_index].modifiers == modifiers) {
+                    is_duplicate_hotkey = 1;
+                    // example explanation next "if" check:
+                    // "Fire overlay" already has hotkey "F" and user tries set same hotkey "F" again to "Fire overlay"
+                    // we must skip show warning window for better user experience
+                    if (!(test_action == action && test_index == index)) {
+                        window_plain_message_dialog_show_with_extra(
+                            TR_HOTKEY_DUPLICATE_TITLE, TR_HOTKEY_DUPLICATE_MESSAGE,
+                            hotkey_action_name_for(test_action));
+                    }
+                    break;
+                }
+            }
+            if (is_duplicate_hotkey) {
+                break;
+            }
+        }
+    }
+    if (!is_duplicate_hotkey) {
+        data.mappings[action][index].key = key;
+        data.mappings[action][index].modifiers = modifiers;
+    }
 }
 
 static void button_hotkey(int row, int is_alternative)
@@ -325,7 +374,7 @@ static void button_close(int save, int param2)
     hotkey_config_clear();
     for (int action = 0; action < HOTKEY_MAX_ITEMS; action++) {
         for (int index = 0; index < 2; index++) {
-            if (data.mappings[action][index].key != KEY_NONE) {
+            if (data.mappings[action][index].key != KEY_TYPE_NONE) {
                 hotkey_config_add_mapping(&data.mappings[action][index]);
             }
         }

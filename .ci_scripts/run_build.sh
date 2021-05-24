@@ -4,50 +4,66 @@ set -e
 
 case "$BUILD_TARGET" in
 "vita")
-	docker exec vitasdk /bin/bash -c "cd build && make"
+	docker exec vitasdk /bin/bash -c "cd build && make -j4"
 	;;
 "switch")
-	docker exec switchdev /bin/bash -c "cd build && make"
+	docker exec switchdev /bin/bash -c "cd build && make -j4"
 	;;
 "mac")
-	cp -r res/mods ./build	
-	cd build && make && make install && \
+	cp -r res/maps ./build	
+	cp -r res/manual ./build	
+	cd build && make -j4 && make install && \
 	echo "Creating disk image" && \
 	hdiutil create -volname Augustus -srcfolder augustus.app -ov -format UDZO augustus.dmg
+	if [[ "$GITHUB_REF" =~ ^refs/tags/v ]]
+	then
+		zip -r augustus.zip augustus.dmg maps manual
+	else
+		zip -r augustus.zip augustus.dmg 	
+	fi
 	;;
-"appimage")
-	cp -r res/mods ./build		
-	cd build && make && \
+"appimage")	
+	cp -r res/maps ./build	
+	cp -r res/manual ./build	
+	cd build && make -j4 && \
 	make DESTDIR=AppDir install && \
 	cd .. && \
 	./.ci_scripts/package_appimage.sh
+	if [[ "$GITHUB_REF" =~ ^refs/tags/v ]]	
+	then
+		zip -r augustus.zip . -i augustus.AppImage maps manual
+	else
+		zip -r augustus.zip . -i augustus.AppImage	
+	fi
 	;;
 "linux")
-	cp -r res/mods ./build
-	cd build && make && \
-	zip -r augustus.zip augustus mods
+	cp -r assets ./build
+	cp -r res/maps ./build	
+	cp -r res/manual ./build	
+	cd build && make -j4
+	if [[ "$GITHUB_REF" =~ ^refs/tags/v ]]
+	then
+		zip -r augustus.zip augustus assets maps manual
+	else
+		zip -r augustus.zip augustus
+	fi
 	;;
 "android")
 	cd android
-	if [ ! -f julius.keystore ]
+	if [ ! -f augustus.keystore ]
 	then
 		COMMAND=assembleDebug
-	elif [ "$TRAVIS_BRANCH" == "master" ]
-	then
-		# Use last commit message for release notes
-		mkdir -p julius/src/main/play/release-notes/en-US
-		git log -1 --pretty=%B > julius/src/main/play/release-notes/en-US/internal.txt
-		COMMAND=publishRelease
 	else
 		COMMAND=assembleRelease
 	fi
+	echo "Running ./gradlew $COMMAND"
 	TERM=dumb ./gradlew $COMMAND
-	if [ -f julius/build/outputs/apk/release/julius-release.apk ]
+	if [ -f augustus/build/outputs/apk/release/augustus-release.apk ]
 	then
-		cp julius/build/outputs/apk/release/julius-release.apk ../build/julius.apk
+		cp augustus/build/outputs/apk/release/augustus-release.apk ../build/augustus.apk
 	fi
 	;;
 *)
-	cd build && make 
+	cd build && make -j4 && make
 	;;
 esac

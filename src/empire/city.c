@@ -1,10 +1,12 @@
 #include "city.h"
 
+#include "core/calc.h"
 #include "city/buildings.h"
 #include "city/finance.h"
 #include "city/map.h"
 #include "city/message.h"
 #include "city/trade.h"
+#include "city/resource.h"
 #include "empire/object.h"
 #include "empire/trade_route.h"
 #include "empire/type.h"
@@ -13,6 +15,10 @@
 
 #include <string.h>
 
+#define MAX_CITIES 41
+#define RESOURCES_TO_TRADER_RATIO 60
+
+static empire_city cities[MAX_CITIES];
 
 void empire_city_clear_all(void)
 {
@@ -64,6 +70,18 @@ int empire_has_access_to_resource(int resource)
         if (cities[i].in_use &&
             (cities[i].type == EMPIRE_CITY_OURS || cities[i].type == EMPIRE_CITY_TRADE) &&
             cities[i].sells_resource[resource] == 1) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int empire_can_export_resource_potentially(int resource)
+{
+    for (int i = 0; i < MAX_CITIES; i++) {
+        if (cities[i].in_use &&
+            cities[i].type == EMPIRE_CITY_TRADE &&
+            cities[i].buys_resource[resource] == 1) {
             return 1;
         }
     }
@@ -231,29 +249,16 @@ void empire_city_force_sell(int route, int resource)
 
 static int generate_trader(int city_id, empire_city *city)
 {
-    int max_traders = 0;
-    int num_resources = 0;
+    int trade_potential = 0;
     for (int r = RESOURCE_MIN; r < RESOURCE_MAX; r++) {
         if (city->buys_resource[r] || city->sells_resource[r]) {
-            ++num_resources;
-            switch (trade_route_limit(city->route_id, r)) {
-                case 15: max_traders += 1; break;
-                case 25: max_traders += 2; break;
-                case 40: max_traders += 3; break;
-            }
+            trade_potential += trade_route_limit(city->route_id, r);
         }
     }
-    if (num_resources > 1) {
-        if (max_traders % num_resources) {
-            max_traders = max_traders / num_resources + 1;
-        } else {
-            max_traders = max_traders / num_resources;
-        }
-    }
-    if (max_traders <= 0) {
+    if (trade_potential <= 0) {
         return 0;
     }
-
+    int max_traders = calc_bound(trade_potential / RESOURCES_TO_TRADER_RATIO + 1, 1, 3);
     int index;
     if (max_traders == 1) {
         if (!city->trader_figure_ids[0]) {
@@ -364,6 +369,19 @@ void empire_city_set_foreign(int city_id)
     cities[city_id].type = EMPIRE_CITY_DISTANT_FOREIGN;
 }
 
+int empire_unlock_all_resources(void)
+{
+	for (int i = 0; i < MAX_CITIES; i++) {
+        if (cities[i].in_use && (cities[i].type == EMPIRE_CITY_OURS)) {
+            for (int resource = RESOURCE_MIN; resource < RESOURCE_MAX; resource++) {
+                cities[i].sells_resource[resource] = 1;
+            }
+            return 1;
+        }
+	}
+	return 0;
+}
+
 void empire_city_save_state(buffer *buf)
 {
     for (int i = 0; i < MAX_CITIES; i++) {
@@ -425,4 +443,3 @@ void empire_city_load_state(buffer *buf)
         buffer_skip(buf, 10);
     }
 }
-

@@ -106,13 +106,11 @@ ELSE()
         /opt/local # DarwinPorts
         /opt/csw # Blastwave
         /opt
+        /boot/system/develop/headers/SDL2 # Haiku
         ${SDL_EXT_DIR}
         ${SDL_MINGW_EXT_DIR}
+        ${CMAKE_FIND_ROOT_PATH}
     )
-
-    if (VITA)
-        SET(SDL2_SEARCH_PATHS $ENV{VITASDK}/arm-vita-eabi)
-    endif()
 
     FIND_PATH(SDL2_INCLUDE_DIR SDL_log.h
         HINTS

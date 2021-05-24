@@ -1,7 +1,8 @@
 #include "figure/trader.h"
 
 #include "empire/trade_prices.h"
-
+#include "figuretype/trader.h"
+#include "trader.h"
 #include <string.h>
 
 #define MAX_TRADERS 100
@@ -39,16 +40,22 @@ int trader_create(void)
 
 void trader_record_bought_resource(int trader_id, resource_type resource)
 {
+    figure *f = figure_get(trader_id);
+    int is_land_trader = f->type == FIGURE_TRADE_CARAVAN || f->type == FIGURE_TRADE_CARAVAN_DONKEY || f->type == FIGURE_NATIVE_TRADER;
+
     data.traders[trader_id].bought_amount++;
     data.traders[trader_id].bought_resources[resource]++;
-    data.traders[trader_id].bought_value += trade_price_sell(resource);
+    data.traders[trader_id].bought_value += trade_price_sell(resource, is_land_trader);
 }
 
 void trader_record_sold_resource(int trader_id, resource_type resource)
 {
+    figure *f = figure_get(trader_id);
+    int is_land_trader = f->type == FIGURE_TRADE_CARAVAN || f->type == FIGURE_TRADE_CARAVAN_DONKEY || f->type == FIGURE_NATIVE_TRADER;
+
     data.traders[trader_id].sold_amount++;
     data.traders[trader_id].sold_resources[resource]++;
-    data.traders[trader_id].sold_value += trade_price_buy(resource);
+    data.traders[trader_id].sold_value += trade_price_buy(resource, is_land_trader);
 }
 
 int trader_bought_resources(int trader_id, resource_type resource)
@@ -68,8 +75,20 @@ int trader_has_traded(int trader_id)
 
 int trader_has_traded_max(int trader_id)
 {
-    return data.traders[trader_id].bought_amount >= 12 || data.traders[trader_id].sold_amount >= 12;
+    return trader_has_bought_max(trader_id) || trader_has_sold_max(trader_id);
 }
+
+int trader_has_bought_max(int trader_id)
+{
+    return data.traders[trader_id].bought_amount >= figure_trade_sea_trade_units();
+}
+
+int trader_has_sold_max(int trader_id)
+{
+    return data.traders[trader_id].sold_amount >= figure_trade_sea_trade_units();
+}
+
+
 
 void traders_save_state(buffer *buf)
 {

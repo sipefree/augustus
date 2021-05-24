@@ -15,7 +15,7 @@
 enum {
     IMAGE_TYPE_WITH_TRANSPARENCY = 0,
     IMAGE_TYPE_ISOMETRIC = 30,
-    IMAGE_TYPE_MOD = 40
+    IMAGE_TYPE_EXTRA_ASSET = 40
 };
 
 /**
@@ -34,6 +34,7 @@ typedef struct {
     int sprite_offset_y;
     int animation_can_reverse;
     int animation_speed_id;
+    int animation_start_offset;
     struct {
         int type;
         int is_fully_compressed;

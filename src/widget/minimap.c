@@ -1,5 +1,6 @@
 #include "minimap.h"
 
+#include "assets/assets.h"
 #include "building/building.h"
 #include "building/monument.h"
 #include "city/view.h"
@@ -13,7 +14,6 @@
 #include "map/property.h"
 #include "map/random.h"
 #include "map/terrain.h"
-#include "mods/mods.h"
 #include "scenario/property.h"
 
 #include <stdlib.h>
@@ -67,38 +67,38 @@ void widget_minimap_invalidate(void)
 static void foreach_map_tile(map_callback *callback)
 {
     city_view_foreach_minimap_tile(data.x_offset, data.y_offset,
-                                   data.absolute_x, data.absolute_y,
-                                   data.width_tiles, data.height_tiles,
-                                   callback);
+        data.absolute_x, data.absolute_y,
+        data.width_tiles, data.height_tiles,
+        callback);
 }
 
-static void set_bounds(int x_offset, int y_offset, int width_tiles, int height_tiles)
+static void set_bounds(int x_offset, int y_offset, int width, int height)
 {
-    data.width_tiles = width_tiles;
-    data.height_tiles = height_tiles;
+    data.width_tiles = width / 2;
+    data.height_tiles = height;
     data.x_offset = x_offset;
     data.y_offset = y_offset;
-    data.width = 2 * width_tiles;
-    data.height = height_tiles;
-    data.absolute_x = (VIEW_X_MAX - width_tiles) / 2;
-    data.absolute_y = (VIEW_Y_MAX - height_tiles) / 2;
+    data.width = width;
+    data.height = height;
+    data.absolute_x = (VIEW_X_MAX - data.width_tiles) / 2;
+    data.absolute_y = (VIEW_Y_MAX - data.height_tiles) / 2;
 
     city_view_get_camera(&data.camera_x, &data.camera_y);
     int view_width_tiles, view_height_tiles;
     city_view_get_viewport_size_tiles(&view_width_tiles, &view_height_tiles);
 
-    if ((map_grid_width() - width_tiles) / 2 > 0) {
+    if ((map_grid_width() - data.width_tiles) / 2 > 0) {
         if (data.camera_x < data.absolute_x) {
             data.absolute_x = data.camera_x;
-        } else if (data.camera_x > width_tiles + data.absolute_x - view_width_tiles) {
-            data.absolute_x = view_width_tiles + data.camera_x - width_tiles;
+        } else if (data.camera_x > data.width_tiles + data.absolute_x - view_width_tiles) {
+            data.absolute_x = view_width_tiles + data.camera_x - data.width_tiles;
         }
     }
-    if ((2 * map_grid_height() - height_tiles) / 2 > 0) {
+    if ((2 * map_grid_height() - data.height_tiles) / 2 > 0) {
         if (data.camera_y < data.absolute_y) {
             data.absolute_y = data.camera_y;
-        } else if (data.camera_y > height_tiles + data.absolute_y - view_height_tiles) {
-            data.absolute_y = view_height_tiles + data.camera_y - height_tiles;
+        } else if (data.camera_y > data.height_tiles + data.absolute_y - view_height_tiles) {
+            data.absolute_y = view_height_tiles + data.camera_y - data.height_tiles;
         }
     }
     // ensure even height
@@ -175,36 +175,34 @@ static void draw_minimap_tile(int x_view, int y_view, int grid_offset)
             }
             if (building_monument_is_monument(b)) {
                 switch (map_property_multi_tile_size(grid_offset)) {
-                case 3: image_draw(mods_get_image_id(mods_get_group_id("Areldir", "UI_Elements"), "3 Mon MapIcon"), x_view, y_view - 2); break;
-                case 5: image_draw(mods_get_image_id(mods_get_group_id("Areldir", "UI_Elements"), "5 Mon MapIcon"), x_view, y_view - 4); break;
-                case 7: image_draw(mods_get_image_id(mods_get_group_id("Areldir", "UI_Elements"), "7 Mon MapIcon"), x_view, y_view - 6); break;
+                    case 2: image_draw(assets_get_image_id(assets_get_group_id("Areldir", "UI_Elements"), "2 Mon MapIcon"), x_view, y_view - 1); break;
+                    case 3: image_draw(assets_get_image_id(assets_get_group_id("Areldir", "UI_Elements"), "3 Mon MapIcon"), x_view, y_view - 2); break;
+                    case 4: image_draw(assets_get_image_id(assets_get_group_id("Areldir", "UI_Elements"), "4 Mon MapIcon"), x_view, y_view - 3); break;
+                    case 5: image_draw(assets_get_image_id(assets_get_group_id("Areldir", "UI_Elements"), "5 Mon MapIcon"), x_view, y_view - 4); break;
+                    case 7: image_draw(assets_get_image_id(assets_get_group_id("Areldir", "UI_Elements"), "7 Mon MapIcon"), x_view, y_view - 6); break;
                 }
             } else {
                 switch (map_property_multi_tile_size(grid_offset)) {
-                case 1: image_draw(image_id, x_view, y_view); break;
-                case 2: image_draw(image_id + 1, x_view, y_view - 1); break;
-                case 3: image_draw(image_id + 2, x_view, y_view - 2); break;
-                case 4: image_draw(image_id + 3, x_view, y_view - 3); break;
-                case 5: image_draw(image_id + 4, x_view, y_view - 4); break;
-                case 7: image_draw(mods_get_image_id(mods_get_group_id("Areldir", "UI_Elements"), "7x7 Map Icon"), x_view, y_view - 6);
+                    case 1: image_draw(image_id, x_view, y_view); break;
+                    case 2: image_draw(image_id + 1, x_view, y_view - 1); break;
+                    case 3: image_draw(image_id + 2, x_view, y_view - 2); break;
+                    case 4: image_draw(image_id + 3, x_view, y_view - 3); break;
+                    case 5: image_draw(image_id + 4, x_view, y_view - 4); break;
+                    case 7: image_draw(assets_get_image_id(assets_get_group_id("Areldir", "UI_Elements"), "7x7 Map Icon"), x_view, y_view - 6);
                 }
             }
         }
     } else {
         int rand = map_random_get(grid_offset);
         int image_id;
-        if (terrain & TERRAIN_WATER) {
-            image_id = image_group(GROUP_MINIMAP_WATER) + (rand & 3);
-        } else if (terrain & TERRAIN_SHRUB) {
-            image_id = image_group(GROUP_MINIMAP_TREE) + (rand & 3);
-        } else if (terrain & TERRAIN_TREE) {
-            image_id = image_group(GROUP_MINIMAP_TREE) + (rand & 3);
-        } else if (terrain & TERRAIN_ROCK) {
-            image_id = image_group(GROUP_MINIMAP_ROCK) + (rand & 3);
-        } else if (terrain & TERRAIN_ELEVATION) {
-            image_id = image_group(GROUP_MINIMAP_ROCK) + (rand & 3);
-        } else if (terrain & TERRAIN_ROAD) {
+        if (terrain & TERRAIN_ROAD) {
             image_id = image_group(GROUP_MINIMAP_ROAD);
+        } else if (terrain & TERRAIN_WATER) {
+            image_id = image_group(GROUP_MINIMAP_WATER) + (rand & 3);
+        } else if (terrain & (TERRAIN_SHRUB | TERRAIN_TREE)) {
+            image_id = image_group(GROUP_MINIMAP_TREE) + (rand & 3);
+        } else if (terrain & (TERRAIN_ROCK | TERRAIN_ELEVATION)) {
+            image_id = image_group(GROUP_MINIMAP_ROCK) + (rand & 3);
         } else if (terrain & TERRAIN_AQUEDUCT) {
             image_id = image_group(GROUP_MINIMAP_AQUEDUCT);
         } else if (terrain & TERRAIN_WALL) {
@@ -245,7 +243,7 @@ static void prepare_minimap_cache(int width, int height)
 {
     if (width != data.width || height != data.height) {
         free(data.cache);
-        data.cache = (color_t *)malloc(sizeof(color_t) * width * height);
+        data.cache = (color_t *) malloc(sizeof(color_t) * width * height);
     }
 }
 
@@ -263,30 +261,30 @@ static void draw_minimap(void)
     graphics_reset_clip_rectangle();
 }
 
-static void draw_uncached(int x_offset, int y_offset, int width_tiles, int height_tiles)
+static void draw_uncached(int x_offset, int y_offset, int width, int height)
 {
     data.enemy_color = ENEMY_COLOR_BY_CLIMATE[scenario_property_climate()];
-    prepare_minimap_cache(2 * width_tiles, height_tiles);
-    set_bounds(x_offset, y_offset, width_tiles, height_tiles);
+    prepare_minimap_cache(width, height);
+    set_bounds(x_offset, y_offset, width, height);
     draw_minimap();
 }
 
-static void draw_using_cache(int x_offset, int y_offset, int width_tiles, int height_tiles)
+static void draw_using_cache(int x_offset, int y_offset, int width, int height)
 {
-    if (width_tiles * 2 != data.width || height_tiles != data.height || x_offset != data.x_offset) {
-        draw_uncached(x_offset, y_offset, width_tiles, height_tiles);
+    if (width != data.width || height != data.height || x_offset != data.x_offset) {
+        draw_uncached(x_offset, y_offset, width, height);
         return;
     }
 
     int old_absolute_x = data.absolute_x;
     int old_absolute_y = data.absolute_y;
-    set_bounds(x_offset, y_offset, width_tiles, height_tiles);
+    set_bounds(x_offset, y_offset, width, height);
     if (data.absolute_x != old_absolute_x || data.absolute_y != old_absolute_y) {
         draw_minimap();
         return;
     }
 
-    graphics_set_clip_rectangle(x_offset, y_offset, 2 * width_tiles, height_tiles);
+    graphics_set_clip_rectangle(x_offset, y_offset, width, height);
     graphics_draw_from_buffer(x_offset, y_offset, data.width, data.height, data.cache);
     draw_viewport_rectangle();
     graphics_reset_clip_rectangle();
@@ -306,19 +304,19 @@ static int should_refresh(int force)
     return REFRESH_NOT_NEEDED;
 }
 
-void widget_minimap_draw(int x_offset, int y_offset, int width_tiles, int height_tiles, int force)
+void widget_minimap_draw(int x_offset, int y_offset, int width, int height, int force)
 {
     int refresh_type = should_refresh(force);
     if (refresh_type != REFRESH_NOT_NEEDED) {
         if (refresh_type == REFRESH_FULL) {
-            draw_uncached(x_offset, y_offset, width_tiles, height_tiles);
+            draw_uncached(x_offset, y_offset, width, height);
         } else {
-            draw_using_cache(x_offset, y_offset, width_tiles, height_tiles);
+            draw_using_cache(x_offset, y_offset, width, height);
         }
-        graphics_draw_horizontal_line(x_offset - 1, x_offset - 1 + width_tiles * 2, y_offset - 1, COLOR_MINIMAP_DARK);
-        graphics_draw_vertical_line(x_offset - 1, y_offset, y_offset + height_tiles, COLOR_MINIMAP_DARK);
-        graphics_draw_vertical_line(x_offset - 1 + width_tiles * 2, y_offset,
-            y_offset + height_tiles, COLOR_MINIMAP_LIGHT);
+        graphics_draw_horizontal_line(x_offset - 1, x_offset - 1 + width, y_offset - 1, COLOR_MINIMAP_DARK);
+        graphics_draw_vertical_line(x_offset - 1, y_offset, y_offset + height, COLOR_MINIMAP_DARK);
+        graphics_draw_vertical_line(x_offset - 1 + width, y_offset,
+            y_offset + height, COLOR_MINIMAP_LIGHT);
     }
 }
 

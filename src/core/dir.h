@@ -46,4 +46,12 @@ const dir_listing *dir_find_all_subdirectories_for_dir(const char* dir, int skip
  */
 const char *dir_get_file(const char *filepath, int localizable);
 
+/**
+ * Get the case sensitive filename of the asset
+ * @param asset_path The path to the asset directory
+ * @param filepath Asset path to match to a case-sensitive asset file on the filesystem
+ * @return Corrected file, or NULL if the file was not found
+ */
+const char *dir_get_asset(const char *asset_path, const char *filepath);
+
 #endif // CORE_DIR_H

@@ -58,7 +58,7 @@ void city_military_update_totals(void)
     city_data.military.total_soldiers = 0;
     city_data.military.soldiers_in_city = 0;
     city_data.military.total_legions = 0;
-    for (int i = 1; i < MAX_FORMATIONS; i++) {
+    for (int i = 1; i < formation_count(); i++) {
         const formation *m = formation_get(i);
         if (m->in_use && m->is_legion) {
             city_data.military.total_legions++;
@@ -66,7 +66,8 @@ void city_military_update_totals(void)
             if (m->empire_service && m->num_figures > 0) {
                 city_data.military.empire_service_legions++;
             }
-            else {
+
+            if (!m->in_distant_battle) {
                 city_data.military.soldiers_in_city += m->num_figures;
             }
         }

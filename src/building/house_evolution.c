@@ -6,8 +6,10 @@
 #include "city/houses.h"
 #include "city/resource.h"
 #include "core/calc.h"
+#include "core/time.h"
 #include "game/resource.h"
 #include "game/time.h"
+#include "game/undo.h"
 #include "map/building.h"
 #include "map/grid.h"
 #include "map/routing_terrain.h"
@@ -174,7 +176,7 @@ static int has_required_goods_and_services(building *house, int for_upgrade, int
     return 1;
 }
 
-static int check_requirements(building* house, house_demands* demands)
+static int check_requirements(building *house, house_demands *demands)
 {
     int bonus = 0;
     if (building_monument_pantheon_module_is_active(PANTHEON_MODULE_2_HOUSING_EVOLUTION) && house->house_pantheon_access) {
@@ -183,8 +185,7 @@ static int check_requirements(building* house, house_demands* demands)
     int status = check_evolve_desirability(house, bonus);
     if (!has_required_goods_and_services(house, 0, bonus, demands)) {
         status = DEVOLVE;
-    }
-    else if (status == EVOLVE) {
+    } else if (status == EVOLVE) {
         status = has_required_goods_and_services(house, 1, bonus, demands);
     }
     return status;
@@ -334,6 +335,7 @@ static int evolve_medium_insula(building *house, house_demands *demands)
     if (!has_devolve_delay(house, status)) {
         if (status == EVOLVE) {
             if (building_house_can_expand(house, 4)) {
+                game_undo_disable();
                 house->house_is_merged = 0;
                 building_house_expand_to_large_insula(house);
                 map_tiles_update_all_gardens();
@@ -353,6 +355,7 @@ static int evolve_large_insula(building *house, house_demands *demands)
         if (status == EVOLVE) {
             building_house_change_to(house, BUILDING_HOUSE_GRAND_INSULA);
         } else if (status == DEVOLVE) {
+            game_undo_disable();
             building_house_devolve_from_large_insula(house);
         }
     }
@@ -391,6 +394,7 @@ static int evolve_medium_villa(building *house, house_demands *demands)
     if (!has_devolve_delay(house, status)) {
         if (status == EVOLVE) {
             if (building_house_can_expand(house, 9)) {
+                game_undo_disable();
                 building_house_expand_to_large_villa(house);
                 map_tiles_update_all_gardens();
                 return 1;
@@ -409,6 +413,7 @@ static int evolve_large_villa(building *house, house_demands *demands)
         if (status == EVOLVE) {
             building_house_change_to(house, BUILDING_HOUSE_GRAND_VILLA);
         } else if (status == DEVOLVE) {
+            game_undo_disable();
             building_house_devolve_from_large_villa(house);
         }
     }
@@ -447,6 +452,7 @@ static int evolve_medium_palace(building *house, house_demands *demands)
     if (!has_devolve_delay(house, status)) {
         if (status == EVOLVE) {
             if (building_house_can_expand(house, 16)) {
+                game_undo_disable();
                 building_house_expand_to_large_palace(house);
                 map_tiles_update_all_gardens();
                 return 1;
@@ -465,6 +471,7 @@ static int evolve_large_palace(building *house, house_demands *demands)
         if (status == EVOLVE) {
             building_house_change_to(house, BUILDING_HOUSE_LUXURY_PALACE);
         } else if (status == DEVOLVE) {
+            game_undo_disable();
             building_house_devolve_from_large_palace(house);
         }
     }
@@ -473,9 +480,9 @@ static int evolve_large_palace(building *house, house_demands *demands)
 
 static int evolve_luxury_palace(building *house, house_demands *demands)
 {
-    int bonus = (int)(building_monument_pantheon_module_is_active(PANTHEON_MODULE_2_HOUSING_EVOLUTION) && house->house_pantheon_access);
+    int bonus = (int) (building_monument_pantheon_module_is_active(PANTHEON_MODULE_2_HOUSING_EVOLUTION) && house->house_pantheon_access);
     int status = check_evolve_desirability(house, bonus);
-    if (!has_required_goods_and_services(house, 0, 0, demands)) {
+    if (!has_required_goods_and_services(house, 0, bonus, demands)) {
         status = DEVOLVE;
     }
     if (!has_devolve_delay(house, status) && status == DEVOLVE) {
@@ -502,7 +509,7 @@ static void consume_resources(building *b)
     if (!(game_time_month() % 6) && b->data.house.temple_mercury && building_monument_gt_module_is_active(MERCURY_MODULE_1_POTTERY_FURN)) {
         consume_resource(b, INVENTORY_OIL, model->oil);
         consume_resource(b, INVENTORY_WINE, model->wine);
-    } 
+    }
     // mercury module 2 - oil and wine reduced by 20%
     else if (!(game_time_month() % 6) && b->data.house.temple_mercury && building_monument_gt_module_is_active(MERCURY_MODULE_2_OIL_WINE)) {
         consume_resource(b, INVENTORY_POTTERY, model->pottery);
@@ -511,8 +518,7 @@ static void consume_resources(building *b)
     // mars module 2 - all goods reduced by 10%
     else if (!(game_time_total_months() % 10) && b->data.house.temple_mars && building_monument_gt_module_is_active(MARS_MODULE_2_ALL_GOODS)) {
 
-    }
-    else {
+    } else {
         consume_resource(b, INVENTORY_POTTERY, model->pottery);
         consume_resource(b, INVENTORY_FURNITURE, model->furniture);
         consume_resource(b, INVENTORY_OIL, model->oil);
@@ -540,14 +546,21 @@ void building_house_process_evolve_and_consume_goods(void)
         active_devolve_delay = DEVOLVE_DELAY;
     }
 
-    for (int i = 1; i < MAX_BUILDINGS; i++) {
-        building *b = building_get(i);
-        if (b->state == BUILDING_STATE_IN_USE && building_is_house(b->type)) {
+    time_millis last_update = time_get_millis();
+
+    for (building_type type = BUILDING_HOUSE_VACANT_LOT; type <= BUILDING_HOUSE_LUXURY_PALACE; type++) {
+        building *next_of_type = 0; // evolve_callback changes the building type
+        for (building *b = building_first_of_type(type); b; b = next_of_type) {
+            next_of_type = b->next_of_type;
+            if (b->state != BUILDING_STATE_IN_USE || b->last_update == last_update) {
+                continue;
+            }
             building_house_check_for_corruption(b);
             has_expanded |= evolve_callback[b->type - BUILDING_HOUSE_VACANT_LOT](b, demands);
             if (game_time_day() == 0 || game_time_day() == 7) {
                 consume_resources(b);
             }
+            b->last_update = last_update;
         }
     }
     if (has_expanded) {
@@ -599,7 +612,7 @@ void building_house_determine_evolve_text(building *house, int worst_desirabilit
         return;
     }
     // food types
-    int foodtypes_required = model->food;
+    int foodtypes_required = model->food_types;
     int foodtypes_available = 0;
     for (int i = INVENTORY_MIN_FOOD; i < INVENTORY_MAX_FOOD; i++) {
         if (house->data.house.inventory[i]) {

@@ -58,6 +58,11 @@ void mouse_set_from_touch(const touch *first, const touch *last)
     clear_mouse_button(&data.middle);
 }
 
+void mouse_remove_touch(void)
+{
+    data.is_touch = 0;
+}
+
 void mouse_set_position(int x, int y)
 {
     if (x != data.x || y != data.y) {
@@ -159,5 +164,19 @@ const mouse *mouse_in_dialog(const mouse *m)
 
     dialog.x = m->x - screen_dialog_offset_x();
     dialog.y = m->y - screen_dialog_offset_y();
+    return &dialog;
+}
+
+const mouse *mouse_in_dialog_with_size(const mouse *m, int width, int height)
+{
+    dialog.left = m->left;
+    dialog.middle = m->middle;
+    dialog.right = m->right;
+    dialog.scrolled = m->scrolled;
+    dialog.is_inside_window = m->is_inside_window;
+    dialog.is_touch = m->is_touch;
+
+    dialog.x = m->x - (screen_width() - width) / 2;
+    dialog.y = m->y - (screen_height() - height) / 2;
     return &dialog;
 }

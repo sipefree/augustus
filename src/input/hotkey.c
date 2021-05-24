@@ -46,14 +46,11 @@ static struct {
     int num_arrows;
 } data;
 
-static void add_definition(const hotkey_mapping *mapping)
+static void set_definition_for_action(hotkey_action action, hotkey_definition *def)
 {
-    hotkey_definition *def = &data.definitions[data.num_definitions];
-    def->key = mapping->key;
-    def->modifiers = mapping->modifiers;
     def->value = 1;
     def->repeatable = 0;
-    switch (mapping->action) {
+    switch (action) {
         case HOTKEY_TOGGLE_PAUSE:
             def->action = &data.hotkey_state.toggle_pause;
             break;
@@ -129,6 +126,9 @@ static void add_definition(const hotkey_mapping *mapping)
             def->action = &data.hotkey_state.show_advisor;
             def->value = ADVISOR_HOUSING;
             break;
+        case HOTKEY_SHOW_OVERLAY_RELATIVE:
+            def->action = &data.hotkey_state.show_overlay_relative;
+            break;
         case HOTKEY_SHOW_OVERLAY_WATER:
             def->action = &data.hotkey_state.show_overlay;
             def->value = OVERLAY_WATER;
@@ -160,6 +160,9 @@ static void add_definition(const hotkey_mapping *mapping)
             break;
         case HOTKEY_ROTATE_BUILDING:
             def->action = &data.hotkey_state.rotate_building;
+            break;
+        case HOTKEY_ROTATE_BUILDING_BACK:
+            def->action = &data.hotkey_state.rotate_building_back;
             break;
         case HOTKEY_GO_TO_BOOKMARK_1:
             def->action = &data.hotkey_state.go_to_bookmark;
@@ -288,9 +291,20 @@ static void add_definition(const hotkey_mapping *mapping)
         case HOTKEY_BUILD_CLONE:
             def->action = &data.hotkey_state.clone_building;
             break;
+        case HOTKEY_UNDO:
+            def->action = &data.hotkey_state.undo;
+            break;
         default:
             def->action = 0;
     }
+}
+
+static void add_definition(const hotkey_mapping *mapping)
+{
+    hotkey_definition *def = &data.definitions[data.num_definitions];
+    def->key = mapping->key;
+    def->modifiers = mapping->modifiers;
+    set_definition_for_action(mapping->action, def);
     if (def->action) {
         data.num_definitions++;
     }
@@ -357,13 +371,13 @@ void hotkey_install_mapping(hotkey_mapping *mappings, int num_mappings)
 
     // Fixed keys: Escape and Enter
     data.definitions[0].action = &data.hotkey_state.enter_pressed;
-    data.definitions[0].key = KEY_ENTER;
+    data.definitions[0].key = KEY_TYPE_ENTER;
     data.definitions[0].modifiers = 0;
     data.definitions[0].repeatable = 0;
     data.definitions[0].value = 1;
 
     data.definitions[1].action = &data.hotkey_state.escape_pressed;
-    data.definitions[1].key = KEY_ESCAPE;
+    data.definitions[1].key = KEY_TYPE_ESCAPE;
     data.definitions[1].modifiers = 0;
     data.definitions[1].repeatable = 0;
     data.definitions[1].value = 1;
@@ -398,7 +412,7 @@ void hotkey_key_pressed(key_type key, key_modifier_type modifiers, int repeat)
         window_hotkey_editor_key_pressed(key, modifiers);
         return;
     }
-    if (key == KEY_NONE) {
+    if (key == KEY_TYPE_NONE) {
         return;
     }
     for (int i = 0; i < data.num_arrows; i++) {
@@ -421,7 +435,7 @@ void hotkey_key_released(key_type key, key_modifier_type modifiers)
         window_hotkey_editor_key_released(key, modifiers);
         return;
     }
-    if (key == KEY_NONE) {
+    if (key == KEY_TYPE_NONE) {
         return;
     }
     for (int i = 0; i < data.num_arrows; i++) {
@@ -432,7 +446,7 @@ void hotkey_key_released(key_type key, key_modifier_type modifiers)
     }
 }
 
-static void confirm_exit(int accepted)
+static void confirm_exit(int accepted, int checked)
 {
     if (accepted) {
         system_exit();
@@ -466,4 +480,11 @@ void hotkey_handle_global_keys(void)
     if (data.global_hotkey_state.save_city_screenshot) {
         graphics_save_screenshot(1);
     }
+}
+
+void hotkey_set_value_for_action(hotkey_action action, int value)
+{
+    hotkey_definition def;
+    set_definition_for_action(action, &def);
+    *(def.action) = value ? def.value : 0;
 }

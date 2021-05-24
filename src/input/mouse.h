@@ -8,9 +8,9 @@
 
 #include "input/touch.h"
 
-/**
- * Mouse button state
- */
+ /**
+  * Mouse button state
+  */
 typedef struct {
     int is_down; /**< Mouse button is down */
     int went_down; /**< Mouse button went down during this cycle */
@@ -68,6 +68,11 @@ void mouse_set_inside_window(int inside);
  */
 void mouse_set_from_touch(const touch *first, const touch *last);
 
+/**
+ * Dissociates touch status from mouse
+ */
+void mouse_remove_touch(void);
+
 void mouse_reset_up_state(void);
 
 void mouse_reset_scroll(void);
@@ -77,5 +82,7 @@ void mouse_reset_button_state(void);
 void mouse_determine_button_state(void);
 
 const mouse *mouse_in_dialog(const mouse *m);
+
+const mouse *mouse_in_dialog_with_size(const mouse *m, int width, int height);
 
 #endif // GRAPHICS_MOUSE_H

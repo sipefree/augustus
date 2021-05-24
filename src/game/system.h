@@ -1,6 +1,7 @@
 #ifndef GAME_SYSTEM_H
 #define GAME_SYSTEM_H
 
+#include "graphics/color.h"
 #include "input/keys.h"
 
 /**
@@ -9,7 +10,7 @@
  */
 
 /**
- * Gets the version of Julius
+ * Gets the version of Augustus
  * @return Version number
  */
 const char *system_version(void);
@@ -22,9 +23,17 @@ const char *system_version(void);
 void system_resize(int width, int height);
 
 /**
- * Reload game textures
+ * Get maximum available resolution
+ * @param width Pointer to variable to store the max width
+ * @param height Pointer to variable to store the max height
  */
-void system_reload_textures(void);
+void system_get_max_resolution(int *width, int *height);
+
+/**
+ * Reload game textures
+ * @return 0 if there was a problem reloading the textures, 1 otherwise
+ */
+int system_reload_textures(void);
 
 /**
  * Saves the screen buffer to memory
@@ -50,6 +59,25 @@ int system_is_fullscreen_only(void);
 void system_set_fullscreen(int fullscreen);
 
 /**
+ * Set display scale to the given percentage
+ * @param scale_percentage Scale percentage to set, 100% is normal
+ * @return The actual scale percentage that was set, which may be different to respect minimum resolution
+ */
+int system_scale_display(int scale_percentage);
+
+/**
+ * Gets maximum display scale for the current display
+ * @return Maximum scale percentage
+ */
+int system_get_max_display_scale(void);
+
+/**
+ * (Re-)Initialize cursors with the specified scale percentage
+ * @param scale_percentage Scaling percentage to use
+ */
+void system_init_cursors(int scale_percentage);
+
+/**
  * Set cursor to the specified cursor in @link input/cursor.h @endlink
  * @param cursor_id Cursor to set
  */
@@ -58,7 +86,7 @@ void system_set_cursor(int cursor_id);
 /**
  * Get the key corresponding to the symbol in the current layout
  * @param name Name of the key
- * @return Corresponding key, or KEY_NONE if the key does not exist on the layout
+ * @return Corresponding key, or KEY_TYPE_NONE if the key does not exist on the layout
  */
 key_type system_keyboard_key_for_symbol(const char *name);
 
@@ -87,10 +115,8 @@ void system_keyboard_set_input_rect(int x, int y, int width, int height);
 
 /**
  * Show the virtual keyboard
- * @param text The text to display on the virtual keyboard
- * @param max_length The maximum length of the text
  */
-void system_keyboard_show(const uint8_t *text, int max_length);
+void system_keyboard_show(void);
 
 /**
  * Hide the virtual keyboard
@@ -127,6 +153,23 @@ void system_move_mouse_cursor(int delta_x, int delta_y);
  * changed to fit in the window
  */
 void system_set_mouse_position(int *x, int *y);
+
+/**
+ * Creates a ui framebuffer
+ * @return The ui framebuffer
+ */
+color_t *system_create_ui_framebuffer(int width, int height);
+
+/**
+ * Creates a city framebuffer
+ * @return The city framebuffer
+ */
+color_t *system_create_city_framebuffer(int width, int height);
+
+/**
+ * Releases the city framebuffer
+ */
+void system_release_city_framebuffer(void);
 
 /**
  * Exit the game

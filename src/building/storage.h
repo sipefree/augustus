@@ -27,6 +27,9 @@ typedef enum {
     BUILDING_STORAGE_STATE_GETTING_QUARTER = 6,
     BUILDING_STORAGE_STATE_GETTING_3QUARTERS = 7,
     BUILDING_STORAGE_STATE_ACCEPTING_3QUARTERS = 8,
+    BUILDING_STORAGE_STATE_NOT_ACCEPTING_HALF = 9,
+    BUILDING_STORAGE_STATE_NOT_ACCEPTING_QUARTER = 10,
+    BUILDING_STORAGE_STATE_NOT_ACCEPTING_3QUARTERS = 11,
 } building_storage_state;
 
 typedef enum {
@@ -111,8 +114,9 @@ void building_storage_save_state(buffer *buf);
 /**
  * Load data
  * @param buf Buffer to read from
+ * @param includes_storage_size true if buf first includes the size, in bytes, of each storage element, false otherwise
  */
-void building_storage_load_state(buffer *buf);
+void building_storage_load_state(buffer *buf, int includes_storage_size);
 
 
 

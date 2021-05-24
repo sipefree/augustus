@@ -111,6 +111,7 @@ static void clear_scenario_data(void)
     enemy_armies_clear();
     figure_name_init();
     formations_clear();
+    building_monument_initialize_deliveries();
     figure_route_clear_all();
     clear_custom_events();
 
@@ -219,15 +220,16 @@ static void load_empire_data(int is_custom_scenario, int empire_id)
 }
 
 /**
- * search for hippodrome buildings, all three pieces should have the same subtype.orientation 
+ * search for hippodrome buildings, all three pieces should have the same subtype.orientation
  */
-static void check_hippodrome_compatibility(building *b){
-    // if we got the middle part of the hippodrome
-    if(b->next_part_building_id && b->prev_part_building_id){
-        building * next = building_get(b->next_part_building_id);
-        building * prev = building_get(b->prev_part_building_id);
+static void check_hippodrome_compatibility(building *b)
+{
+// if we got the middle part of the hippodrome
+    if (b->next_part_building_id && b->prev_part_building_id) {
+        building *next = building_get(b->next_part_building_id);
+        building *prev = building_get(b->prev_part_building_id);
         // if orientation is different, it means that rotation was not available yet in augustus, so it should be set to 0
-        if(b->subtype.orientation != next->subtype.orientation || b->subtype.orientation != prev->subtype.orientation){
+        if (b->subtype.orientation != next->subtype.orientation || b->subtype.orientation != prev->subtype.orientation) {
             prev->subtype.orientation = 0;
             b->subtype.orientation = 0;
             next->subtype.orientation = 0;
@@ -235,12 +237,10 @@ static void check_hippodrome_compatibility(building *b){
     }
 }
 
-static void check_backward_compatibility(void){
-    for (int i = 1; i < MAX_BUILDINGS; i++) {
-        building *b = building_get(i);
-        if(b->type == BUILDING_HIPPODROME){
-            check_hippodrome_compatibility(b);
-        }
+static void check_backward_compatibility(void)
+{
+    for (building *b = building_first_of_type(BUILDING_HIPPODROME); b; b = b->next_of_type) {
+        check_hippodrome_compatibility(b);
     }
 }
 
@@ -277,8 +277,6 @@ static void initialize_saved_game(void)
     map_tiles_determine_gardens();
 
     city_message_clear_scroll();
-
-    building_monument_recalculate_monuments();
 
     game_state_unpause();
 }
@@ -384,6 +382,7 @@ int game_file_load_scenario_data(const char *scenario_file)
 
     trade_prices_reset();
     load_empire_data(1, scenario_empire_id());
+    city_view_reset_orientation();
     return 1;
 }
 
@@ -429,9 +428,9 @@ int game_file_load_scenario_data_from_xml(const char* scenario_file)
 int game_file_load_saved_game(const char *filename)
 {
     clear_custom_events();
-
-    if (!game_file_io_read_saved_game(filename, 0)) {
-        return 0;
+    int result = game_file_io_read_saved_game(filename, 0);
+    if (result != 1) {
+        return result;
     }
     
     check_backward_compatibility();
