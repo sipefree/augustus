@@ -368,6 +368,10 @@ void load_all_custom_messages() {
 				m->height_blocks = 16;
 			}
 
+			if (m->width_blocks < 16) {
+				m->width_blocks = 42;
+			}
+
 			if (strlen(custom_events[i].event_data.sound) > 0) {
 				m->custom_sound_filename = custom_events[i].event_data.sound;
 			}

@@ -322,7 +322,7 @@ static void draw_content(const lang_message *msg)
 
     if (msg->signature.text) {
         rich_text_draw(msg->signature.text,
-            data.x_text + 8, (data.text_height_blocks - 1) * 22, 16 * data.text_width_blocks - 16,
+            data.x_text + 8, (data.text_height_blocks - 1) * 16, 16 * data.text_width_blocks - 16,
             data.text_height_blocks - 1, 0);
     }
 
