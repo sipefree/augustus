@@ -200,8 +200,6 @@ static void throw_party(void)
         case FESTIVAL_LARGE: city_message_post(1, MESSAGE_LARGE_FESTIVAL, 0, 0); break;
         case FESTIVAL_GRAND: city_message_post(1, MESSAGE_GRAND_FESTIVAL, 0, 0); break;
     }
-    city_data.festival.planned.size = FESTIVAL_NONE;
-    city_data.festival.planned.months_to_go = 0;
 }
 
 void city_festival_update(void)

@@ -29,6 +29,7 @@
 #include "city/trade.h"
 #include "city/victory.h"
 #include "core/random.h"
+#include "core/events.h"
 #include "editor/editor.h"
 #include "empire/city.h"
 #include "figure/formation.h"
@@ -76,6 +77,7 @@ static void advance_month(void)
     scenario_random_event_process();
     city_finance_handle_month_change();
     city_resource_consume_food();
+    custom_events_process();
     scenario_distant_battle_process();
     scenario_invasion_process();
     scenario_request_process();

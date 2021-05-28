@@ -319,6 +319,12 @@ void empire_city_open_trade(int city_id)
     city->is_open = 1;
 }
 
+void empire_city_change_type(int city_id, int new_type)
+{
+    empire_city* city = &cities[city_id];
+    city->type = new_type;
+}
+
 void empire_city_generate_trader(void)
 {
     for (int i = 1; i < MAX_CITIES; i++) {

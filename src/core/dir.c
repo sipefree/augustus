@@ -92,7 +92,7 @@ static int compare_case(const char *filename)
 static int correct_case(const char *dir, char *filename, int type)
 {
     data.cased_filename = filename;
-    return platform_file_manager_list_directory_contents(dir, type, 0, compare_case) == LIST_MATCH;
+    return platform_file_manager_list_directory_contents(dir, type, 0, 0, compare_case) == LIST_MATCH;
 }
 
 static void move_left(char *str)

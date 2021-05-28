@@ -9,7 +9,10 @@
 #include "game/time.h"
 #include "graphics/window.h"
 #include "sound/effect.h"
+#include "sound/speech.h"
 #include "window/message_dialog.h"
+
+#include <string.h>
 
 #define MAX_MESSAGES 1000
 #define MAX_QUEUE 20
@@ -127,10 +130,20 @@ static void enqueue_message(int sequence)
 
 static void play_sound(int text_id)
 {
-    if (lang_get_message(text_id)->urgent == 1) {
-        sound_effect_play(SOUND_EFFECT_FANFARE_URGENT);
-    } else {
-        sound_effect_play(SOUND_EFFECT_FANFARE);
+    uint8_t *custom_sound_filename = lang_get_message(text_id)->custom_sound_filename;
+    uint8_t path[32] = "wavs/";
+    if (custom_sound_filename) {
+        strcat(path, custom_sound_filename);
+        strcat(path, ".wav");
+        sound_speech_play_file(path);      
+    }
+    else {
+        if (lang_get_message(text_id)->urgent == 1) {
+            sound_effect_play(SOUND_EFFECT_FANFARE_URGENT);
+        }
+        else {
+            sound_effect_play(SOUND_EFFECT_FANFARE);
+        }
     }
 }
 
@@ -140,6 +153,7 @@ static void show_message_popup(int message_id)
     data.consecutive_message_delay = 5;
     msg->is_read = 1;
     int text_id = city_message_get_text_id(msg->message_type);
+    
     if (!has_video(text_id)) {
         play_sound(text_id);
     }

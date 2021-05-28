@@ -10,6 +10,7 @@
 #include "core/lang.h"
 #include "core/locale.h"
 #include "core/log.h"
+#include "core/load_empire.h"
 #include "core/random.h"
 #include "editor/editor.h"
 #include "figure/type.h"

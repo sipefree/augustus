@@ -82,5 +82,7 @@ double calc_bound_double(double value, double min, double max);
 
 int calc_absolute_decrement(int value, int step);
 
+int calc_midpoint(int x1, int x2);
+
 
 #endif // CORE_CALC_H

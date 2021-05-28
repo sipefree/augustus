@@ -2,33 +2,18 @@
 
 #include "core/calc.h"
 #include "core/image.h"
+#include "core/load_empire.h"
 #include "empire/city.h"
 #include "empire/trade_route.h"
 #include "empire/type.h"
 #include "game/animation.h"
 #include "scenario/empire.h"
 
-#define MAX_OBJECTS 200
-
-typedef struct {
-    int in_use;
-    int city_type;
-    int city_name_id;
-    int trade_route_open;
-    int trade_route_cost;
-    int city_sells_resource[10];
-    int city_buys_resource[8];
-    int trade40;
-    int trade25;
-    int trade15;
-    empire_object obj;
-} full_empire_object;
-
-static full_empire_object objects[MAX_OBJECTS];
+#include <string.h>
 
 static int get_trade_amount_code(int index, int resource);
 
-static void fix_image_ids(void)
+void fix_image_ids(void)
 {
     int image_id = 0;
     for (int i = 0; i < MAX_OBJECTS; i++) {
@@ -93,11 +78,12 @@ void empire_object_load(buffer *buf)
         obj->invasion_years = buffer_read_u8(buf);
         full->trade40 = buffer_read_u16(buf);
         full->trade25 = buffer_read_u16(buf);
-        full->trade15 = buffer_read_u16(buf);
+        full->trade15 = buffer_read_u16(buf); //bitflags???
         buffer_skip(buf, 6);
     }
 
     fix_image_ids();
+
 }
 
 void empire_object_init_cities(void)
@@ -110,9 +96,14 @@ void empire_object_init_cities(void)
         }
         full_empire_object *obj = &objects[i];
         empire_city *city = empire_city_get(route_index++);
+
+        // new game city initialization
+
         city->in_use = 1;
         city->type = obj->city_type;
         city->name_id = obj->city_name_id;
+        strcpy(city->display_name, obj->city_display_name);
+
         if (obj->obj.trade_route_id < 0) {
             obj->obj.trade_route_id = 0;
         }
@@ -188,6 +179,7 @@ const empire_object *empire_object_get_our_city(void)
 
 void empire_object_foreach(void (*callback)(const empire_object *))
 {
+    
     for (int i = 0; i < MAX_OBJECTS; i++) {
         if (objects[i].in_use) {
             callback(&objects[i].obj);
@@ -308,6 +300,7 @@ static int get_trade_amount_code(int index, int resource)
         return 0;
     }
     int resource_flag = 1 << resource;
+
     if (objects[index].trade40 & resource_flag) {
         return 3;
     }
@@ -380,4 +373,10 @@ static int get_animation_offset(int image_id, int current_index)
 int empire_object_update_animation(const empire_object *obj, int image_id)
 {
     return objects[obj->id].obj.animation_index = get_animation_offset(image_id, obj->animation_index);
+}
+
+void clear_empire_objects(void) {
+    for (int i = 0; i < MAX_OBJECTS; i++) {
+        memset(&objects[i], 0, sizeof(full_empire_object));
+    }
 }

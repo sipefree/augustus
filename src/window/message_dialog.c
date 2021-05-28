@@ -24,6 +24,9 @@
 #include "window/advisors.h"
 #include "window/city.h"
 
+#include "core/events.h"
+#include <string.h>
+
 #define MAX_HISTORY 200
 
 static void draw_foreground_video(void);
@@ -149,6 +152,7 @@ static int is_event_message(const lang_message *msg) {
 
 static void draw_city_message_text(const lang_message *msg)
 {
+      
     if (msg->message_type != MESSAGE_TYPE_TUTORIAL) {
         int width = lang_text_draw(25, player_message.month, data.x_text + 10, data.y_text + 6, FONT_NORMAL_WHITE);
         width += lang_text_draw_year(player_message.year,
@@ -296,6 +300,7 @@ static void draw_content(const lang_message *msg)
     if (!msg->content.text) {
         return;
     }
+
     int header_offset = msg->type == TYPE_MANUAL ? 48 : 32;
     data.text_height_blocks = msg->height_blocks - 1 - (header_offset + data.y_text - data.y) / 16;
     data.text_width_blocks = rich_text_init(msg->content.text,
@@ -314,6 +319,13 @@ static void draw_content(const lang_message *msg)
             data.x_text + 8, data.y_text + 6, 16 * data.text_width_blocks - 16,
             data.text_height_blocks - 1, 0);
     }
+
+    if (msg->signature.text) {
+        rich_text_draw(msg->signature.text,
+            data.x_text + 8, (data.text_height_blocks - 1) * 22, 16 * data.text_width_blocks - 16,
+            data.text_height_blocks - 1, 0);
+    }
+
     graphics_reset_clip_rectangle();
 }
 
