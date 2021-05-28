@@ -15,10 +15,8 @@
 
 #include <string.h>
 
-#define MAX_CITIES 41
 #define RESOURCES_TO_TRADER_RATIO 60
 
-static empire_city cities[MAX_CITIES];
 
 void empire_city_clear_all(void)
 {

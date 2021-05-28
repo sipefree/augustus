@@ -442,7 +442,7 @@ static translation_string all_strings[] = {
     {TR_TOOLTIP_OVERLAY_LEVY, " denarii paid monthly in levies." }, 
     {TR_MAP_EDITOR_OPTIONS, "Scenario settings" },
     { TR_MAIN_MENU_SCENARIO, "Augustus Scenarios" },
-    { TR_MAIN_MENU_CLASSIC_SCENARIO, "Classic Scenarios" }
+    { TR_MAIN_MENU_CLASSIC_SCENARIO, "Classic Scenarios" },
     {TR_TOOLTIP_OVERLAY_LEVY, " denarii paid monthly in levies." },
     {TR_MAP_EDITOR_OPTIONS, "Scenario settings" },
     {TR_BUILDING_TAVERN, "Tavern" },

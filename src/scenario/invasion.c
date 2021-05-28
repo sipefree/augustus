@@ -138,10 +138,10 @@ int scenario_invasion_get_years_remaining(void)
 {
     int years_until_invasion = 4;
     for (int i = 0; i < MAX_INVASION_WARNINGS; i++) {
-        if (data.warnings[i].in_use && data.warnings[i].handled &&
-            data.warnings[i].warning_years < years_until_invasion) {
-            years_until_invasion = data.warnings[i].warning_years;
-        }
+       if (invasion_warning_data.warnings[i].in_use && invasion_warning_data.warnings[i].handled &&
+           invasion_warning_data.warnings[i].warning_years < years_until_invasion) {
+           years_until_invasion = invasion_warning_data.warnings[i].warning_years;
+       }
     }
     return years_until_invasion != 4 ? years_until_invasion : 0;
 }
@@ -442,9 +442,9 @@ void scenario_invasion_start_from_console(int attack_type, int size, int invasio
                 int grid_offset = start_invasion(ENEMY_ID_TO_ENEMY_TYPE[enemy_id], size, invasion_point, FORMATION_ATTACK_RANDOM, 23);
                 if (grid_offset) {
                     if (ENEMY_ID_TO_ENEMY_TYPE[enemy_id] > 4) {
-                        city_message_post(1, MESSAGE_ENEMY_ARMY_ATTACK, data.last_internal_invasion_id, grid_offset);
+                        city_message_post(1, MESSAGE_ENEMY_ARMY_ATTACK, invasion_warning_data.last_internal_invasion_id, grid_offset);
                     } else {
-                        city_message_post(1, MESSAGE_BARBARIAN_ATTACK, data.last_internal_invasion_id, grid_offset);
+                        city_message_post(1, MESSAGE_BARBARIAN_ATTACK, invasion_warning_data.last_internal_invasion_id, grid_offset);
                     }
                 }
                 break;
@@ -458,7 +458,7 @@ void scenario_invasion_start_from_console(int attack_type, int size, int invasio
             {
                 int grid_offset = start_invasion(ENEMY_0_BARBARIAN, size, 8, FORMATION_ATTACK_FOOD_CHAIN, 23);
                 if (grid_offset) {
-                    city_message_post(1, MESSAGE_LOCAL_UPRISING_MARS, data.last_internal_invasion_id, grid_offset);
+                    city_message_post(1, MESSAGE_LOCAL_UPRISING_MARS, invasion_warning_data.last_internal_invasion_id, grid_offset);
                 }
                 break;
             }

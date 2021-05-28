@@ -67,7 +67,7 @@ static int add_to_listing(const char *filename)
 const dir_listing *dir_find_files_with_extension(const char *dir, const char *extension)
 {
     clear_dir_listing();
-    platform_file_manager_list_directory_contents(dir, TYPE_FILE, extension, add_to_listing);
+    platform_file_manager_list_directory_contents(dir, TYPE_FILE, extension, 0, add_to_listing);
     qsort(data.listing.files, data.listing.num_files, sizeof(char *), compare_lower);
     return &data.listing;
 }
@@ -75,8 +75,18 @@ const dir_listing *dir_find_files_with_extension(const char *dir, const char *ex
 const dir_listing *dir_find_all_subdirectories(void)
 {
     clear_dir_listing();
-    platform_file_manager_list_directory_contents(0, TYPE_DIR, 0, add_to_listing);
+    platform_file_manager_list_directory_contents(0, TYPE_DIR, 0, 0, add_to_listing);
     qsort(data.listing.files, data.listing.num_files, sizeof(char *), compare_lower);
+    return &data.listing;
+}
+
+const dir_listing* dir_find_all_subdirectories_for_dir(const char* dir, int skip_clear)
+{
+    if (!skip_clear) {
+        clear_dir_listing();
+    }
+    platform_file_manager_list_directory_contents(dir, TYPE_DIR, 0, 1, add_to_listing);
+    qsort(data.listing.files, data.listing.num_files, sizeof(char*), compare_lower);
     return &data.listing;
 }
 
@@ -168,7 +178,7 @@ static const char *get_case_corrected_file(const char *dir, const char *filepath
 
 const dir_listing *dir_append_files_with_extension(const char *extension)
 {
-    platform_file_manager_list_directory_contents(0, TYPE_FILE, extension, add_to_listing);
+    platform_file_manager_list_directory_contents(0, TYPE_FILE, extension, 0, add_to_listing);
     qsort(data.listing.files, data.listing.num_files, sizeof(char *), compare_lower);
     return &data.listing;
 }
