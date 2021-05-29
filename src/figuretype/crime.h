@@ -3,6 +3,8 @@
 
 #include "figure/figure.h"
 
+void figure_force_riot(int num_per_riot);
+
 void figure_generate_criminals(void);
 
 void figure_protestor_action(figure *f);

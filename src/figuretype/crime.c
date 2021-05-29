@@ -210,6 +210,31 @@ static void generate_protestor(building *b)
     city_sentiment_set_crime_cooldown();
 }
 
+void figure_force_riot(int num_per_riot) {
+    int num_figures = calc_bound((num_per_riot / 3), 1, 7);
+    building* min_building = 0;
+    int min_happiness = 101;
+    for (building_type type = BUILDING_HOUSE_SMALL_TENT; type <= BUILDING_HOUSE_LUXURY_PALACE; type++) {
+        for (building* b = building_first_of_type(type); b; b = b->next_of_type) {
+            if (b->state != BUILDING_STATE_IN_USE || !b->house_size) {
+                continue;
+            }
+            else if (b->sentiment.house_happiness < min_happiness) {
+                min_happiness = b->sentiment.house_happiness;
+                min_building = b;                
+            }
+        }
+    }
+
+    if (min_building) {
+        generate_rioter(min_building, num_figures);
+        generate_looter(min_building, num_figures);
+        generate_robber(min_building, num_figures);
+        city_sentiment_set_min_happiness(30);
+    }
+    
+}
+
 void figure_generate_criminals(void)
 {
     if (city_games_executions_active()) {

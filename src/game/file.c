@@ -359,10 +359,11 @@ static const char *get_scenario_filename(const uint8_t *scenario_name, int decom
 
 int game_file_start_scenario_by_name(const uint8_t *scenario_name)
 {
-    if (start_scenario(scenario_name, get_scenario_filename(scenario_name, 0), 0)) {
+    int is_augustus_scenario = (scenario.empire.id == 99);
+    if (start_scenario(scenario_name, get_scenario_filename(scenario_name, 0), is_augustus_scenario)) {
         return 1;
     } else {
-        return start_scenario(scenario_name, get_scenario_filename(scenario_name, 1), 0);
+        return start_scenario(scenario_name, get_scenario_filename(scenario_name, 1), is_augustus_scenario);
     }
 }
 

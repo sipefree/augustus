@@ -18,7 +18,7 @@
 
 #include <string.h>
 
-#define MAX_TAG_TYPES 7
+#define MAX_TAG_TYPES 24
 
 static struct {
     struct {
@@ -40,24 +40,26 @@ static const char SCEN_XML_FILE_ATTRIBUTES[XML_MAX_DEPTH][XML_MAX_ELEMENTS_PER_D
     { { "name", "startDate", "author" } }, // scenario
     { 
         { "tagline", "text" }, // description
-        { "text", "title", "cityName", "resourceId", "amount", "deadlineMonths", "favorGained", "size", "god" }, //event
+        { "text", "title", "cityName", "resourceId", "amount", "deadlineMonths", "favorGained", "size", "god", "duration", "isSea", "figures" }, //event
         { "text", "entrypointId", "amount", "monthsWarning" }, //invasion
         { "text", "title", "header", "signature",  "sound", "advisorId"} //message
     },
     { { "value", "requirement" } } //condition
 };
 
-static const char EVENT_TYPE_TAGS[MAX_TAG_TYPES][24] = {
+static const char EVENT_TYPE_TAGS[MAX_TAG_TYPES][XML_TAG_MAX_LENGTH] = {
     "demandChange",
     "priceChange",
     "request",
     "cityNowTrades",
     "wageChange",
     "festival",
-    "victory"
+    "victory",
+    "tradeInterruption",
+    "riot"
 };
 
-static const char INVASION_TYPE_TAGS[MAX_TAG_TYPES][24] = {
+static const char INVASION_TYPE_TAGS[MAX_TAG_TYPES][XML_TAG_MAX_LENGTH] = {
     "uprising",
     "distantBattle"
 };
@@ -161,6 +163,15 @@ static void scen_xml_start_event_element(const char** attributes)
         }
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[1][1][8]) == 0) {
             strcpy(scenario_data.xml.current_event.event_data.god, string_from_ascii(attributes[i + 1]));
+        }
+        if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[1][1][9]) == 0) {
+            scenario_data.xml.current_event.event_data.duration = string_to_int(string_from_ascii(attributes[i + 1]));
+        }
+        if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[1][1][10]) == 0) {
+            scenario_data.xml.current_event.event_data.is_sea = string_to_int(string_from_ascii(attributes[i + 1]));
+        }
+        if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[1][1][11]) == 0) {
+            scenario_data.xml.current_event.event_data.figures = string_to_int(string_from_ascii(attributes[i + 1]));
         }
     }
 }

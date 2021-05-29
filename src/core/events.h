@@ -43,6 +43,8 @@ typedef enum {
 	EVENT_TYPE_MESSAGE,
 	EVENT_TYPE_FESTIVAL,
 	EVENT_TYPE_VICTORY,
+	EVENT_TYPE_TRADE_INTERRUPTION,
+	EVENT_TYPE_RIOTS,
 	EVENT_TYPE_MAX_KEY
 } event_key;
 
@@ -81,13 +83,16 @@ typedef struct {
 	int amount;
 	int deadline_months;
 	int favor_gained;
-	uint8_t city_name[24];
+	char city_name[24];
 	uint8_t type[24];
 	int months_warning;
 	int entrypoint_id;
 	int message_id;
 	int size;
 	uint8_t god[10];
+	int duration;
+	int is_sea;
+	int figures;
 
 } custom_event_data;
 

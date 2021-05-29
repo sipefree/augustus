@@ -36,11 +36,11 @@ static struct {
 static generic_button buttons[] = {
     {192, 130, 256, 25, button_click, button_none, 1, 0},
     {192, 170, 256, 25, button_click, button_none, 2, 0},
-    { 192, 180, 256, 25, button_click, button_none, 7, 0 },
-    {192, 210, 256, 25, button_click, button_none, 3, 0},
-    {192, 250, 256, 25, button_click, button_none, 4, 0},
-    {192, 290, 256, 25, button_click, button_none, 5, 0},
-    {192, 330, 256, 25, button_click, button_none, 6, 0},
+    {192, 210, 256, 25, button_click, button_none, 7, 0 },
+    {192, 250, 256, 25, button_click, button_none, 3, 0},
+    {192, 290, 256, 25, button_click, button_none, 4, 0},
+    {192, 330, 256, 25, button_click, button_none, 5, 0},
+    {192, 370, 256, 25, button_click, button_none, 6, 0},
 };
 
 static void draw_version_string(void)
@@ -83,10 +83,11 @@ static void draw_foreground(void)
 
     lang_text_draw_centered(30, 1, 192, 136, 256, FONT_NORMAL_GREEN);
     lang_text_draw_centered(30, 2, 192, 176, 256, FONT_NORMAL_GREEN);
-    text_draw_centered(translation_for(TR_MAIN_MENU_SCENARIO), 192, 186, 261, FONT_NORMAL_GREEN, 0);
-    text_draw_centered(translation_for(TR_MAIN_MENU_CLASSIC_SCENARIO), 192, 226, 256, FONT_NORMAL_GREEN, 0);    lang_text_draw_centered(9, 8, 192, 256, 256, FONT_NORMAL_GREEN);
-    lang_text_draw_centered(2, 0, 192, 296, 256, FONT_NORMAL_GREEN);
-    lang_text_draw_centered(30, 5, 192, 336, 256, FONT_NORMAL_GREEN);
+    text_draw_centered(translation_for(TR_MAIN_MENU_SCENARIO), 192, 216, 261, FONT_NORMAL_GREEN, 0);
+    text_draw_centered(translation_for(TR_MAIN_MENU_CLASSIC_SCENARIO), 192, 256, 256, FONT_NORMAL_GREEN, 0);    
+    lang_text_draw_centered(9, 8, 192, 296, 256, FONT_NORMAL_GREEN);
+    lang_text_draw_centered(2, 0, 192, 336, 256, FONT_NORMAL_GREEN);
+    lang_text_draw_centered(30, 5, 192, 376, 256, FONT_NORMAL_GREEN);
 
     graphics_reset_dialog();
 }
