@@ -46,8 +46,7 @@ static struct {
 static int file_exists_in_dir(const char *dir, const char *file)
 {
     char path[2 * FILE_NAME_MAX];
-    path[2 * FILE_NAME_MAX - 1] = 0;
-    strncpy(path, dir, 2 * FILE_NAME_MAX - 1);
+    strncpy_s(path, sizeof(path), dir, 2 * FILE_NAME_MAX - 1);
     strncat(path, "/", 2 * FILE_NAME_MAX - 1);
     strncat(path, file, 2 * FILE_NAME_MAX - 1);
     return file_exists(path, NOT_LOCALIZED);
@@ -500,7 +499,7 @@ const lang_message *lang_get_message(int id)
 
 lang_message *get_next_message_entry(void) {
     for (int i = DEFAULT_USED_MESSAGE_ENTRIES; i <= MAX_MESSAGE_ENTRIES; ++i) {
-        if ((int)strlen(&data.message_entries[i].content.text) == 0) {
+        if ((int)strlen((char *)&data.message_entries[i].content.text) == 0) {
             return &data.message_entries[i];
         }
     }
@@ -510,10 +509,10 @@ lang_message *get_next_message_entry(void) {
 
 int get_next_message_index(void) {
     for (int i = DEFAULT_USED_MESSAGE_ENTRIES; i <= MAX_MESSAGE_ENTRIES; ++i) {
-        if ((int)strlen(&data.message_entries[i].content.text) == 0) {
+        if ((int)strlen((char *)&data.message_entries[i].content.text) == 0) {
             return i;
         }
     }
 
-    return &data.message_entries[MAX_MESSAGE_ENTRIES];
+    return MAX_MESSAGE_ENTRIES;
 }

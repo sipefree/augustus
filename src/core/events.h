@@ -63,7 +63,7 @@ typedef struct {
 
 typedef struct {
 	event_key key;
-	uint8_t event_type_string[24];
+	char event_type_string[24];
 	EventActivationFunction activation_function;
 	city_message_type city_message_type;
 } custom_event_type;
@@ -74,10 +74,10 @@ typedef struct {
 } god_mapping;
 
 typedef struct {
-	char text[1024];
-	char header[128];
-	char signature[128];
-	char title[128];
+	uint8_t text[1024];
+	uint8_t header[128];
+	uint8_t signature[128];
+	uint8_t title[128];
 	char sound[24];
 	int advisor_id;
 	int resource_id;

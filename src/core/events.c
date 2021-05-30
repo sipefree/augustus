@@ -225,7 +225,7 @@ void show_message(custom_event_data event_data) {
 }
 
 void start_festival(custom_event_data event_data) {
-	int god_id;
+	int god_id = 0;
 	for (int i = 0; i <= 4; ++i) {
 		if (strcmp(event_data.god, god_mappings[i].god_string) == 0) {
 			god_id = god_mappings[i].god_id;
@@ -302,7 +302,7 @@ static custom_event_type all_custom_event_types[] = {
 	{EVENT_TYPE_INVASION, "invasion", start_custom_invasion, MESSAGE_DISTANT_BATTLE},
 	{EVENT_TYPE_UPRISING, "uprising", start_custom_invasion, MESSAGE_DISTANT_BATTLE},
 	{EVENT_TYPE_DISTANT_BATTLE, "distantBattle", start_custom_invasion, MESSAGE_CAESAR_REQUESTS_ARMY},
-	//{EVENT_TYPE_EARTHQUAKE, "earthquake", start_earthquake},
+	//{EVENT_TYPE_EARTHQUAKE, "earthquake", start_earthquake}, 
 	//{EVENT_TYPE_PLAGUE}
 	{EVENT_TYPE_RIOTS, "riot", start_riot, MESSAGE_RIOT},
 	//{EVENT_TYPE_SENTIMENT}

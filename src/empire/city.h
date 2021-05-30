@@ -8,7 +8,7 @@ typedef struct {
     int in_use;
     int type;
     int name_id;
-    char display_name[24];
+    uint8_t display_name[24];
     int route_id;
     int is_open;
     int buys_resource[RESOURCE_MAX];

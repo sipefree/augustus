@@ -390,17 +390,17 @@ int game_file_load_scenario_data(const char *scenario_file)
 //todo: i think this only works on windows
 const char* get_scenario_dir_from_map_file_path(const char* scenario_file)
 {
-    const char* path_to_scenario_map[FILENAME_MAX];
-    const char* path_to_scenario_dir[FILENAME_MAX];
+    char* path_to_scenario_map[FILENAME_MAX];
+    char* path_to_scenario_dir[FILENAME_MAX];
 
-    strcpy(path_to_scenario_map, scenario_file);
-    _splitpath_s(path_to_scenario_map,
+    strcpy((char*)path_to_scenario_map, scenario_file);
+    _splitpath_s((char*)path_to_scenario_map,
         NULL, 0,
-        path_to_scenario_dir, sizeof(path_to_scenario_dir),
+        (char*)path_to_scenario_dir, sizeof(path_to_scenario_dir),
         NULL, 0,
         NULL, 0);
 
-    return path_to_scenario_dir;
+    return (const char*)path_to_scenario_dir;
 }
 
 int game_file_load_scenario_data_from_xml(const char* scenario_file)
@@ -409,7 +409,7 @@ int game_file_load_scenario_data_from_xml(const char* scenario_file)
         return 0;
     }
 
-    char* path_to_scenario_dir = get_scenario_dir_from_map_file_path(scenario_file);
+    const char* path_to_scenario_dir = get_scenario_dir_from_map_file_path(scenario_file);
 
     char empire_filepath[FILE_NAME_MAX];
     strcpy(empire_filepath, path_to_scenario_dir);
@@ -439,7 +439,7 @@ int game_file_load_saved_game(const char *filename)
     building_storage_reset_building_ids();
 
     if (scenario.empire.id == 99) {
-        char* path_to_scenario_dir = get_scenario_dir_from_map_file_path(scenario.scenario_name);
+        const char* path_to_scenario_dir = get_scenario_dir_from_map_file_path(scenario.scenario_name);
 
         char empire_filepath[FILE_NAME_MAX];
         strcpy(empire_filepath, path_to_scenario_dir);
