@@ -174,7 +174,7 @@ void start_custom_invasion(custom_event_data event_data)
 	} 
 	else {
 		//schedule
-		int invasion_year = floor(months_warning / 12);
+		int invasion_year = months_warning / 12;
 		int invasion_month = game_time_month() + (months_warning % 12);
 		scenario.invasions[nextInvasionId].year = invasion_year;
 		scenario.invasions[nextInvasionId].month = invasion_month;
@@ -210,7 +210,6 @@ void start_custom_invasion(custom_event_data event_data)
 
 void city_now_trades(custom_event_data event_data) {
 	int city_id = get_city_id_from_name(event_data);
-	empire_city a = cities[city_id];
 	cities[city_id].type = 2;
 
 	if (event_data.message_id) {
@@ -232,7 +231,7 @@ void start_festival(custom_event_data event_data) {
 			god_id = god_mappings[i].god_id;
 		}
 	}
-	festival_sentiment_and_deity(event_data.size, event_data.god);
+	festival_sentiment_and_deity(event_data.size, god_id);
 	if (event_data.message_id) {
 		city_message_post(1, event_data.message_id, 0, 0);
 	}
@@ -296,6 +295,7 @@ static condition_value all_condition_values[] = {
 };
 
 static custom_event_type all_custom_event_types[] = {
+	{EVENT_TYPE_INVALID, "invalid", 0, 0},
 	{EVENT_TYPE_DEMAND_CHANGE, "demandChange", perform_demand_change, MESSAGE_INCREASED_TRADING},
 	{EVENT_TYPE_PRICE_CHANGE, "priceChange", perform_price_change, MESSAGE_PRICE_INCREASED},
 	{EVENT_TYPE_REQUEST, "request", make_request, MESSAGE_CAESAR_REQUESTS_GOODS},
@@ -303,7 +303,6 @@ static custom_event_type all_custom_event_types[] = {
 	{EVENT_TYPE_UPRISING, "uprising", start_custom_invasion, MESSAGE_DISTANT_BATTLE},
 	{EVENT_TYPE_DISTANT_BATTLE, "distantBattle", start_custom_invasion, MESSAGE_CAESAR_REQUESTS_ARMY},
 	//{EVENT_TYPE_EARTHQUAKE, "earthquake", start_earthquake},
-	//{EVENT_TYPE_TRADE_BLOCK, "earthquake", start_earthquake},
 	//{EVENT_TYPE_PLAGUE}
 	{EVENT_TYPE_RIOTS, "riot", start_riot, MESSAGE_RIOT},
 	//{EVENT_TYPE_SENTIMENT}
@@ -317,7 +316,6 @@ static custom_event_type all_custom_event_types[] = {
 };
 
 
-
 custom_event_type get_event_type(custom_event_data event_data) {
 	int valueType;
 	for (int i = 0; i <= CONDITION_VALUE_MAX_KEY; ++i) {
@@ -326,6 +324,7 @@ custom_event_type get_event_type(custom_event_data event_data) {
 			return all_custom_event_types[i];
 		}
 	}
+	return all_custom_event_types[0];
 }
 
 int test_condition(event_condition condition) {
@@ -398,7 +397,7 @@ void load_all_custom_messages() {
 				m->signature.text = custom_events[i].event_data.signature;
 			}
 			m->content.text = custom_events[i].event_data.text;	
-			m->height_blocks = (strlen(m->content.text) / 20);
+			m->height_blocks = ((int)strlen(m->content.text) / 20);
 
 			if (m->height_blocks < 16) {
 				m->height_blocks = 16;

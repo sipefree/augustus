@@ -390,7 +390,7 @@ int game_file_load_scenario_data(const char *scenario_file)
 //todo: i think this only works on windows
 const char* get_scenario_dir_from_map_file_path(const char* scenario_file)
 {
-    char path_to_scenario_map[FILENAME_MAX];
+    const char* path_to_scenario_map[FILENAME_MAX];
     const char* path_to_scenario_dir[FILENAME_MAX];
 
     strcpy(path_to_scenario_map, scenario_file);

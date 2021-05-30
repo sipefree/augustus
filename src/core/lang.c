@@ -500,7 +500,7 @@ const lang_message *lang_get_message(int id)
 
 lang_message *get_next_message_entry(void) {
     for (int i = DEFAULT_USED_MESSAGE_ENTRIES; i <= MAX_MESSAGE_ENTRIES; ++i) {
-        if (strlen(&data.message_entries[i].content.text) == 0) {
+        if ((int)strlen(&data.message_entries[i].content.text) == 0) {
             return &data.message_entries[i];
         }
     }
@@ -510,7 +510,7 @@ lang_message *get_next_message_entry(void) {
 
 int get_next_message_index(void) {
     for (int i = DEFAULT_USED_MESSAGE_ENTRIES; i <= MAX_MESSAGE_ENTRIES; ++i) {
-        if (strlen(&data.message_entries[i].content.text) == 0) {
+        if ((int)strlen(&data.message_entries[i].content.text) == 0) {
             return i;
         }
     }

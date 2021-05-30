@@ -32,6 +32,7 @@ typedef void (*EventActivationFunction)();
 typedef int (*GetValueFunction)();
 
 typedef enum {
+	EVENT_TYPE_INVALID,
 	EVENT_TYPE_DEMAND_CHANGE,
 	EVENT_TYPE_PRICE_CHANGE,
 	EVENT_TYPE_REQUEST,
@@ -50,13 +51,13 @@ typedef enum {
 
 typedef struct {
 	condition_key key;
-	uint8_t value_type_string[24];
+	char value_type_string[24];
 	GetValueFunction actual_value_function;
 
 } condition_value;
 
 typedef struct {
-	uint8_t value[24];
+	char value[24];
 	int requirement;
 } event_condition;
 
@@ -68,28 +69,28 @@ typedef struct {
 } custom_event_type;
 
 typedef struct {
-	uint8_t god_string[10];
+	char god_string[10];
 	int god_id;
 } god_mapping;
 
 typedef struct {
-	uint8_t text[1024];
-	uint8_t header[128];
-	uint8_t signature[128];
-	uint8_t title[128];
-	uint8_t sound[24];
+	char text[1024];
+	char header[128];
+	char signature[128];
+	char title[128];
+	char sound[24];
 	int advisor_id;
 	int resource_id;
 	int amount;
 	int deadline_months;
 	int favor_gained;
 	char city_name[24];
-	uint8_t type[24];
+	char type[24];
 	int months_warning;
 	int entrypoint_id;
 	int message_id;
 	int size;
-	uint8_t god[10];
+	char god[10];
 	int duration;
 	int is_sea;
 	int figures;

@@ -68,7 +68,7 @@ typedef struct {
     struct lang_message_string video;
     struct lang_message_string content;
     struct lang_message_string signature;
-    uint8_t *custom_sound_filename;
+    char *custom_sound_filename;
 } lang_message;
 
 /**
