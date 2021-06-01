@@ -76,6 +76,7 @@
 #include "sound/music.h"
 
 #include <string.h>
+#include <stdlib.h>
 
 static const char MISSION_PACK_FILE[] = "mission1.pak";
 char* path_to_scenario_dir[FILENAME_MAX];
