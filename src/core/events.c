@@ -356,7 +356,7 @@ int test_conditions_for_event(custom_event event) {
 }
 
 void custom_events_process() {
-	for (int i = 0; i <= MAX_CUSTOM_EVENTS; ++i) {
+	for (int i = 0; i < MAX_CUSTOM_EVENTS; ++i) {
 		if (custom_events[i].in_use && !custom_events[i].fired) {
 			if (test_conditions_for_event(custom_events[i])) {
 				custom_event_type event_type = get_event_type(custom_events[i].event_data);
@@ -370,7 +370,7 @@ void custom_events_process() {
 
 void load_all_custom_messages() {
 	int total_custom_messages = 0;
-	for (int i = 0; i <= MAX_CUSTOM_EVENTS; ++i) {
+	for (int i = 0; i < MAX_CUSTOM_EVENTS; ++i) {
 		if (custom_events[i].in_use && !string_is_empty(custom_events[i].event_data.text)) {
 			lang_message* m = get_next_message_entry();
 			custom_event_type event_type = get_event_type(custom_events[i].event_data);			

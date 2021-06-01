@@ -43,14 +43,17 @@ static struct {
     uint8_t message_data[MAX_MESSAGE_DATA];
 } data;
 
-static int file_exists_in_dir(const char *dir, const char *file)
+
+static int file_exists_in_dir(const char* dir, const char* file)
 {
     char path[2 * FILE_NAME_MAX];
-    strncpy_s(path, sizeof(path), dir, 2 * FILE_NAME_MAX - 1);
+    path[2 * FILE_NAME_MAX - 1] = 0;
+    strncpy(path, dir, 2 * FILE_NAME_MAX - 1);
     strncat(path, "/", 2 * FILE_NAME_MAX - 1);
     strncat(path, file, 2 * FILE_NAME_MAX - 1);
     return file_exists(path, NOT_LOCALIZED);
 }
+
 
 int lang_dir_is_valid(const char *dir)
 {
