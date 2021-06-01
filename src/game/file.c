@@ -78,6 +78,7 @@
 #include <string.h>
 
 static const char MISSION_PACK_FILE[] = "mission1.pak";
+char* path_to_scenario_dir[FILENAME_MAX];
 
 static const char MISSION_SAVED_GAMES[][32] = {
     "Citizen.sav",
@@ -391,7 +392,6 @@ int game_file_load_scenario_data(const char *scenario_file)
 const char* get_scenario_dir_from_map_file_path(const char* scenario_file)
 {
     char* path_to_scenario_map[FILENAME_MAX];
-    char* path_to_scenario_dir[FILENAME_MAX];
 
     strcpy((char*)path_to_scenario_map, scenario_file);
     _splitpath_s((char*)path_to_scenario_map,
@@ -439,7 +439,7 @@ int game_file_load_saved_game(const char *filename)
     building_storage_reset_building_ids();
 
     if (scenario.empire.id == 99) {
-        const char* path_to_scenario_dir = get_scenario_dir_from_map_file_path(scenario.scenario_name);
+        const char* path_to_scenario_dir = get_scenario_dir_from_map_file_path((const char*)scenario.scenario_name);
 
         char empire_filepath[FILE_NAME_MAX];
         strcpy(empire_filepath, path_to_scenario_dir);

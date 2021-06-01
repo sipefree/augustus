@@ -55,4 +55,7 @@ int string_to_int(const uint8_t *str);
  */
 int string_from_int(uint8_t *dst, int value, int force_plus_sign);
 
+int string_is_empty(const uint8_t* value);
+
+
 #endif // CORE_STRING_H

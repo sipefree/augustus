@@ -3,6 +3,7 @@
 #include "core/calc.h"
 #include "core/image.h"
 #include "core/load_empire.h"
+#include "core/string.h"
 #include "empire/city.h"
 #include "empire/trade_route.h"
 #include "empire/type.h"
@@ -102,7 +103,7 @@ void empire_object_init_cities(void)
         city->in_use = 1;
         city->type = obj->city_type;
         city->name_id = obj->city_name_id;
-        strcpy(city->display_name, obj->city_display_name);
+        string_copy(obj->city_display_name, city->display_name, 255);
 
         if (obj->obj.trade_route_id < 0) {
             obj->obj.trade_route_id = 0;

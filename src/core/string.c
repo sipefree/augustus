@@ -133,3 +133,9 @@ int string_from_int(uint8_t *dst, int value, int force_plus_sign)
 
     return total_chars;
 }
+
+
+int string_is_empty(const uint8_t* value)
+{
+    return !value || value[0] == '\0';
+}

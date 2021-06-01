@@ -9,6 +9,7 @@
 #include "city/sentiment.h"
 #include "city/trade.h"
 #include "city/victory.h"
+#include "core/string.h"
 #include "empire/city.h"
 #include "empire/object.h"
 #include "empire/trade_prices.h"
@@ -22,7 +23,7 @@
 #include <string.h>
 #include <math.h>
 
-static god_mapping god_mappings[] = {
+static god_mapping god_mappings[] = { 
 	{"ceres", GOD_CERES},
 	{"neptune", GOD_NEPTUNE},
 	{"mercury", GOD_MERCURY},
@@ -36,7 +37,7 @@ int get_months_passed() {
 
 int get_city_id_from_name(custom_event_data event_data) {
 	for (int i = 0; i < MAX_CITIES; ++i) {
-		if (strcmp(event_data.city_name, cities[i].display_name) == 0) {
+		if (strcmp(event_data.city_name, (char *)cities[i].display_name) == 0) {
 			return i;
 		}
 	}
@@ -317,10 +318,8 @@ static custom_event_type all_custom_event_types[] = {
 
 
 custom_event_type get_event_type(custom_event_data event_data) {
-	int valueType;
 	for (int i = 0; i <= CONDITION_VALUE_MAX_KEY; ++i) {
 		if (strcmp(event_data.type, all_custom_event_types[i].event_type_string) == 0) {
-			valueType = i;
 			return all_custom_event_types[i];
 		}
 	}
@@ -372,7 +371,7 @@ void custom_events_process() {
 void load_all_custom_messages() {
 	int total_custom_messages = 0;
 	for (int i = 0; i <= MAX_CUSTOM_EVENTS; ++i) {
-		if (custom_events[i].in_use && custom_events[i].event_data.text[0] != '\0') {
+		if (custom_events[i].in_use && !string_is_empty(custom_events[i].event_data.text)) {
 			lang_message* m = get_next_message_entry();
 			custom_event_type event_type = get_event_type(custom_events[i].event_data);			
 			city_message_type default_message =	event_type.city_message_type;
@@ -382,22 +381,22 @@ void load_all_custom_messages() {
 			m->image = lang_get_message(text_id)->image;
 			m->video = lang_get_message(text_id)->video;					
 
-			if (strlen(custom_events[i].event_data.title) > 0) {
+			if (!string_is_empty(custom_events[i].event_data.title)) {
 				m->title.text = custom_events[i].event_data.title;
 			}
 			else {
 				m->title.text = lang_get_message(text_id)->title.text;
 			}
-			if (strlen(custom_events[i].event_data.header) > 0) {
+			if (!string_is_empty(custom_events[i].event_data.header)) {
 				m->subtitle.text = custom_events[i].event_data.header;
 				m->subtitle.x = 20;
 				m->subtitle.y = 50;
 			}
-			if (strlen(custom_events[i].event_data.signature) > 0) {
+			if (!string_is_empty(custom_events[i].event_data.signature)) {
 				m->signature.text = custom_events[i].event_data.signature;
 			}
 			m->content.text = custom_events[i].event_data.text;	
-			m->height_blocks = ((int)strlen(m->content.text) / 20);
+			m->height_blocks = ((int)string_length(m->content.text) / 20);
 
 			if (m->height_blocks < 16) {
 				m->height_blocks = 16;

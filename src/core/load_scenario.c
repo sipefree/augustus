@@ -104,13 +104,13 @@ static void scen_xml_start_scenario_element(const char** attributes)
     for (int i = 0; i < total_attributes; i += 2) {
 
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[0][0][0]) == 0) {
-            strcpy(scenario_data.xml.scenario->scenario_name, string_from_ascii(attributes[i + 1]));
+            strcpy((char *)scenario_data.xml.scenario->scenario_name, attributes[i + 1]);
         }
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[0][0][1]) == 0) {
             scenario_data.xml.scenario->start_year = string_to_int(string_from_ascii(attributes[i + 1]));
         }
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[0][0][2]) == 0) {
-            strcpy(scenario_data.xml.scenario->author, string_from_ascii(attributes[i + 1]));
+            strcpy((char*)scenario_data.xml.scenario->author, attributes[i + 1]);
         }
     }
 }
@@ -123,28 +123,28 @@ static void scen_xml_start_description_element(const char** attributes)
     for (int i = 0; i < total_attributes; i += 2) {
 
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[1][0][0]) == 0) {
-            strcpy(scenario_data.xml.scenario->brief_description, string_from_ascii(attributes[i + 1]));
+            strcpy((char*) scenario_data.xml.scenario->brief_description, attributes[i + 1]);
         }
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[1][0][1]) == 0) {
-            strcpy(scenario_data.xml.scenario->briefing, string_from_ascii(attributes[i + 1]));
+            strcpy((char*) scenario_data.xml.scenario->briefing, attributes[i + 1]);
         }
     }
 }
 
 static void scen_xml_start_event_element(const char** attributes)
 {
-    strcpy(scenario_data.xml.current_event.event_data.type, string_from_ascii(scenario_data.xml.current_tag));
+    strcpy(scenario_data.xml.current_event.event_data.type, scenario_data.xml.current_tag);
 
     int total_attributes = count_xml_attributes(attributes);
     for (int i = 0; i < total_attributes; i += 2) {
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[1][1][0]) == 0) {
-            strcpy(scenario_data.xml.current_event.event_data.text, string_from_ascii(attributes[i + 1]));
+            strcpy((char*) scenario_data.xml.current_event.event_data.text, attributes[i + 1]);
         }
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[1][1][1]) == 0) {
-            strcpy(scenario_data.xml.current_event.event_data.title, string_from_ascii(attributes[i + 1]));
+            strcpy((char*) scenario_data.xml.current_event.event_data.title, attributes[i + 1]);
         }
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[1][1][2]) == 0) {
-            strcpy(scenario_data.xml.current_event.event_data.city_name, string_from_ascii(attributes[i + 1]));
+            strcpy(scenario_data.xml.current_event.event_data.city_name, attributes[i + 1]);
         }
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[1][1][3]) == 0) {
             scenario_data.xml.current_event.event_data.resource_id = string_to_int(string_from_ascii(attributes[i + 1]));
@@ -162,7 +162,7 @@ static void scen_xml_start_event_element(const char** attributes)
             scenario_data.xml.current_event.event_data.size = string_to_int(string_from_ascii(attributes[i + 1]));
         }
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[1][1][8]) == 0) {
-            strcpy(scenario_data.xml.current_event.event_data.god, string_from_ascii(attributes[i + 1]));
+            strcpy(scenario_data.xml.current_event.event_data.god, attributes[i + 1]);
         }
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[1][1][9]) == 0) {
             scenario_data.xml.current_event.event_data.duration = string_to_int(string_from_ascii(attributes[i + 1]));
@@ -178,12 +178,12 @@ static void scen_xml_start_event_element(const char** attributes)
 
 static void scen_xml_start_invasion_element(const char** attributes)
 {
-    strcpy(scenario_data.xml.current_event.event_data.type, string_from_ascii(scenario_data.xml.current_tag));
+    strcpy(scenario_data.xml.current_event.event_data.type, scenario_data.xml.current_tag);
 
     int total_attributes = count_xml_attributes(attributes);
     for (int i = 0; i < total_attributes; i += 2) {
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[1][2][0]) == 0) {
-            strcpy(scenario_data.xml.current_event.event_data.text, string_from_ascii(attributes[i + 1]));
+            strcpy((char*)scenario_data.xml.current_event.event_data.text, attributes[i + 1]);
         }
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[1][2][1]) == 0) {
             scenario_data.xml.current_event.event_data.entrypoint_id = string_to_int(string_from_ascii(attributes[i + 1]));
@@ -199,25 +199,25 @@ static void scen_xml_start_invasion_element(const char** attributes)
 
 static void scen_xml_start_message_element(const char** attributes) {
     
-    strcpy(scenario_data.xml.current_event.event_data.type, string_from_ascii(scenario_data.xml.current_tag));
+    strcpy(scenario_data.xml.current_event.event_data.type, scenario_data.xml.current_tag);
 
     int total_attributes = count_xml_attributes(attributes);
     for (int i = 0; i < total_attributes; i += 2) {
 
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[1][3][0]) == 0) {
-            strcpy(scenario_data.xml.current_event.event_data.text, string_from_ascii(attributes[i + 1]));
+            strcpy((char*) scenario_data.xml.current_event.event_data.text, attributes[i + 1]);
         }
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[1][3][1]) == 0) {
-            strcpy(scenario_data.xml.current_event.event_data.title, string_from_ascii(attributes[i + 1]));
+            strcpy((char*) scenario_data.xml.current_event.event_data.title, attributes[i + 1]);
         }
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[1][3][2]) == 0) {
-            strcpy(scenario_data.xml.current_event.event_data.header, string_from_ascii(attributes[i + 1]));
+            strcpy((char*) scenario_data.xml.current_event.event_data.header, attributes[i + 1]);
         }
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[1][3][3]) == 0) {
-            strcpy(scenario_data.xml.current_event.event_data.signature, string_from_ascii(attributes[i + 1]));
+            strcpy((char*) scenario_data.xml.current_event.event_data.signature, attributes[i + 1]);
         }
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[1][3][4]) == 0) {
-            strcpy(scenario_data.xml.current_event.event_data.sound, string_from_ascii(attributes[i + 1]));
+            strcpy(scenario_data.xml.current_event.event_data.sound, attributes[i + 1]);
         }
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[1][3][5]) == 0) {
             scenario_data.xml.current_event.event_data.advisor_id = string_to_int(string_from_ascii(attributes[i + 1]));
@@ -231,7 +231,7 @@ static void scen_xml_start_condition_element(const char** attributes)
     for (int i = 0; i < total_attributes; i += 2) {
 
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[2][0][0]) == 0) {
-            strcpy(scenario_data.xml.current_event.conditions[scenario_data.xml.total_conditions_for_current_event].value, string_from_ascii(attributes[i + 1]));
+            strcpy(scenario_data.xml.current_event.conditions[scenario_data.xml.total_conditions_for_current_event].value, attributes[i + 1]);
         }
         if (strcmp(attributes[i], SCEN_XML_FILE_ATTRIBUTES[2][0][1]) == 0) {
             scenario_data.xml.current_event.conditions[scenario_data.xml.total_conditions_for_current_event].requirement = string_to_int(string_from_ascii(attributes[i + 1]));

@@ -130,8 +130,8 @@ static void enqueue_message(int sequence)
 
 static void play_sound(int text_id)
 {
-    uint8_t *custom_sound_filename = lang_get_message(text_id)->custom_sound_filename;
-    uint8_t path[32] = "wavs/";
+    const char *custom_sound_filename = lang_get_message(text_id)->custom_sound_filename;
+    char path[32] = "wavs/";
     if (custom_sound_filename) {
         strcat(path, custom_sound_filename);
         strcat(path, ".wav");

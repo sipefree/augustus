@@ -225,19 +225,18 @@ static void button_select_item(int index, int param2)
     file_name_to_display = strtok(NULL, "/");
     file_name_to_display = strtok(NULL, "/");
 
-    strcpy(data.selected_scenario_display, file_name_to_display);
+    strcpy((char *)data.selected_scenario_display, file_name_to_display);
 
     char map_filepath[FILE_NAME_MAX];
     strcpy(map_filepath, data.selected_scenario_filename);
     strcat(map_filepath, "/");
-    strcat(map_filepath, data.selected_scenario_display);
+    strcat(map_filepath, (char*) data.selected_scenario_display);
     strcat(map_filepath, ".map");
 
     
     strcpy(data.selected_scenario_map_filename, map_filepath);
 
     game_file_load_scenario_data_from_xml(data.selected_scenario_map_filename);
-    encoding_from_utf8(data.selected_scenario_display, data.selected_scenario_display, FILE_NAME_MAX);
     window_invalidate();
 }
 

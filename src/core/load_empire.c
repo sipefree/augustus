@@ -209,7 +209,7 @@ static void xml_start_city_element(const char** attributes)
             city->city_type = string_to_int(string_from_ascii(attributes[i + 1]));
         }
         if (strcmp(attributes[i], XML_FILE_ATTRIBUTES[1][0][1]) == 0) {
-            strcpy(city->city_display_name, string_from_ascii(attributes[i + 1]));
+            strcpy((char *)city->city_display_name, attributes[i + 1]);
         }
         if (strcmp(attributes[i], XML_FILE_ATTRIBUTES[1][0][2]) == 0) {
             city->obj.x = string_to_int(string_from_ascii(attributes[i + 1]));
@@ -346,15 +346,15 @@ static void xml_end_invasion_element(void)
     data.total_objects++;
 }
 
-static void xml_end_enemy_path_element(void)
-{
-    data.total_objects++;
-}
-
-static void xml_end_roman_path_element(void)
-{
-    data.total_objects++;
-}
+//static void xml_end_enemy_path_element(void)
+//{
+//    data.total_objects++;
+//}
+//
+//static void xml_end_roman_path_element(void)
+//{
+//    data.total_objects++;
+//}
 
 static void xml_end_city_element(void)
 {
