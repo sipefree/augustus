@@ -20,11 +20,6 @@ typedef struct {
 
 #define MAX_INVASION_WARNINGS 101
 
-struct {
-    int last_internal_invasion_id;
-    invasion_warning warnings[MAX_INVASION_WARNINGS];
-} invasion_warning_data;
-
 void scenario_invasion_clear(void);
 void scenario_invasion_init(void);
 

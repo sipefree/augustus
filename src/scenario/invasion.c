@@ -73,6 +73,11 @@ enum {
     ATTACK_TYPE_NATIVES
 };
 
+static struct {
+    int last_internal_invasion_id;
+    invasion_warning warnings[MAX_INVASION_WARNINGS];
+} invasion_warning_data;
+
 void scenario_invasion_clear(void)
 {
     memset(invasion_warning_data.warnings, 0, MAX_INVASION_WARNINGS * sizeof(invasion_warning));
