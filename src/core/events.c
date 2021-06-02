@@ -23,6 +23,8 @@
 #include <string.h>
 #include <math.h>
 
+custom_event custom_events[MAX_CUSTOM_EVENTS];
+
 static god_mapping god_mappings[] = { 
 	{"ceres", GOD_CERES},
 	{"neptune", GOD_NEPTUNE},
@@ -183,26 +185,26 @@ void start_custom_invasion(custom_event_data event_data)
 		//create warnings
 		int path_current = 1;
 
-		invasion_warning* warning = &invasion_warning_data.warnings[1];
+		//invasion_warning* warning = &invasion_warning_data.warnings[1];
 		for (int year = 0; year < 8; year++) {
 			int obj_year = year;
 			if (obj_year == 0) {
 				obj_year = 1;
 			}
 			const empire_object* obj = empire_object_get_battle_icon(path_current, obj_year);
-			if (obj) {
-				warning->empire_object_id = obj->id;
-				warning->invasion_path_id = obj->invasion_path_id;
-				warning->warning_years = obj->invasion_years;
-				warning->x = obj->x;
-				warning->y = obj->y;
-				warning->image_id = obj->image_id;
-			}
+			//if (obj) {
+			//	warning->empire_object_id = obj->id;
+			//	warning->invasion_path_id = obj->invasion_path_id;
+			//	warning->warning_years = obj->invasion_years;
+			//	warning->x = obj->x;
+			//	warning->y = obj->y;
+			//	warning->image_id = obj->image_id;
+			//}
 
-			warning->in_use = 1;
-			warning->invasion_id = nextInvasionId;			
-			warning->months_to_go += 12 * year;
-			++warning;
+			//warning->in_use = 1;
+			//warning->invasion_id = nextInvasionId;			
+			//warning->months_to_go += 12 * year;
+			//++warning;
 		}
 		path_current++;
 		

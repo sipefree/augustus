@@ -3,7 +3,7 @@
 
 #include "core/buffer.h"
 
-int fired_events[180];
+extern int fired_events[180];
 
 int scenario_is_saved(void);
 

@@ -73,7 +73,6 @@ enum {
     ATTACK_TYPE_NATIVES
 };
 
-
 void scenario_invasion_clear(void)
 {
     memset(invasion_warning_data.warnings, 0, MAX_INVASION_WARNINGS * sizeof(invasion_warning));

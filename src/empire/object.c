@@ -12,6 +12,8 @@
 
 #include <string.h>
 
+full_empire_object objects[MAX_OBJECTS];
+
 static int get_trade_amount_code(int index, int resource);
 
 void fix_image_ids(void)

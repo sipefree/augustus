@@ -108,7 +108,7 @@ typedef struct {
 	int chance_to_fire;
 } custom_event;
 
-custom_event custom_events[MAX_CUSTOM_EVENTS];
+extern custom_event custom_events[MAX_CUSTOM_EVENTS];
 
 void custom_events_process();
 

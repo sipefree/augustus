@@ -40,7 +40,7 @@ typedef struct {
 
 
 #define MAX_OBJECTS 200
-full_empire_object objects[MAX_OBJECTS];
+extern full_empire_object objects[MAX_OBJECTS];
 
 void empire_object_load(buffer *buf);
 
