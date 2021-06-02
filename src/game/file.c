@@ -76,6 +76,7 @@
 #include "sound/music.h"
 
 #include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 static const char MISSION_PACK_FILE[] = "mission1.pak";
@@ -389,19 +390,13 @@ int game_file_load_scenario_data(const char *scenario_file)
     return 1;
 }
 
-//todo: i think this only works on windows
-const char* get_scenario_dir_from_map_file_path(const char* scenario_file)
-{
-    char* path_to_scenario_map[FILENAME_MAX];
-
-    strcpy((char*)path_to_scenario_map, scenario_file);
-    _splitpath_s((char*)path_to_scenario_map,
-        NULL, 0,
-        (char*)path_to_scenario_dir, sizeof(path_to_scenario_dir),
-        NULL, 0,
-        NULL, 0);
-
-    return (const char*)path_to_scenario_dir;
+void get_scenario_dir_from_map_file_path(char* dir, const char* path) {
+    const char* slash = path, * next;
+    while ((next = strpbrk(slash + 1, "\\/"))) slash = next;
+    if (path != slash) slash++;
+    
+    strncpy(dir, path, slash - path);
+    dir[slash - path] = '\0';
 }
 
 int game_file_load_scenario_data_from_xml(const char* scenario_file)
@@ -409,8 +404,9 @@ int game_file_load_scenario_data_from_xml(const char* scenario_file)
     if (!game_file_io_read_scenario(scenario_file)) {
         return 0;
     }
+    char path_to_scenario_dir[FILENAME_MAX];
 
-    const char* path_to_scenario_dir = get_scenario_dir_from_map_file_path(scenario_file);
+    get_scenario_dir_from_map_file_path(path_to_scenario_dir, scenario_file);
 
     char empire_filepath[FILE_NAME_MAX];
     strcpy(empire_filepath, path_to_scenario_dir);
@@ -427,10 +423,10 @@ int game_file_load_scenario_data_from_xml(const char* scenario_file)
     return 1;
 }
 
-int game_file_load_saved_game(const char *filename)
+int game_file_load_saved_game(const char *path_to_map)
 {
     clear_custom_events();
-    int result = game_file_io_read_saved_game(filename, 0);
+    int result = game_file_io_read_saved_game(path_to_map, 0);
     if (result != 1) {
         return result;
     }
@@ -440,7 +436,8 @@ int game_file_load_saved_game(const char *filename)
     building_storage_reset_building_ids();
 
     if (scenario.empire.id == 99) {
-        const char* path_to_scenario_dir = get_scenario_dir_from_map_file_path((const char*)scenario.scenario_name);
+        char path_to_scenario_dir[FILE_NAME_MAX];
+        get_scenario_dir_from_map_file_path(path_to_scenario_dir, path_to_map);
 
         char empire_filepath[FILE_NAME_MAX];
         strcpy(empire_filepath, path_to_scenario_dir);
