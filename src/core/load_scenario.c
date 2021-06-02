@@ -20,6 +20,8 @@
 
 #define MAX_TAG_TYPES 24
 
+extern int fired_events[180];
+
 static struct {
     struct {
         char file_name[FILE_NAME_MAX];

@@ -1,14 +1,17 @@
-#ifndef EVENTS_H
-#define EVENTS_H
 
-#include <stdint.h>
+
+
+#ifndef CORE_EVENTS_H
+#define CORE_EVENTS_H
+
 #include "core/lang.h"
 #include "city/message.h"
+#include "empire/city.h"
+
+#include <stdint.h>
 
 #define MAX_CUSTOM_EVENTS 180
 #define MAX_CONDITIONS 9
-
-uint8_t MESSAGE_TEXT_OVERRIDE[512];
 
 typedef enum {
 	CONDITION_VALUE_MONTHS_PASSED,

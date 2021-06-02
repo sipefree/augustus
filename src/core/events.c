@@ -1,5 +1,6 @@
-#include "game/time.h"
 #include "events.h"
+
+#include "game/time.h"
 #include "city/constants.h"
 #include "city/festival.h"
 #include "city/finance.h"
@@ -10,7 +11,6 @@
 #include "city/trade.h"
 #include "city/victory.h"
 #include "core/string.h"
-#include "empire/city.h"
 #include "empire/object.h"
 #include "empire/trade_prices.h"
 #include "empire/trade_route.h"
@@ -22,6 +22,12 @@
 
 #include <string.h>
 #include <math.h>
+
+extern int fired_events[180]; 
+extern empire_city cities[41];
+extern full_empire_object objects[200];
+extern custom_event custom_events[180];
+extern struct invasion_warning_data;
 
 static god_mapping god_mappings[] = { 
 	{"ceres", GOD_CERES},

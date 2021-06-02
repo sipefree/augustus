@@ -9,6 +9,7 @@
 #include "scenario/data.h"
 
 struct scenario_t scenario;
+extern int fired_events[180];
 
 
 int scenario_is_saved(void)
