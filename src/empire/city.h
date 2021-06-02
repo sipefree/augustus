@@ -22,7 +22,7 @@ typedef struct {
 
 #define MAX_CITIES 41
 
-empire_city cities[MAX_CITIES];
+extern empire_city cities[MAX_CITIES];
 
 void empire_city_clear_all(void);
 

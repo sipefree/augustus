@@ -23,12 +23,6 @@
 #include <string.h>
 #include <math.h>
 
-extern int fired_events[180]; 
-extern empire_city cities[41];
-extern full_empire_object objects[200];
-extern custom_event custom_events[180];
-extern struct invasion_warning_data;
-
 static god_mapping god_mappings[] = { 
 	{"ceres", GOD_CERES},
 	{"neptune", GOD_NEPTUNE},

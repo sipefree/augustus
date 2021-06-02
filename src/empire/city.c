@@ -17,6 +17,7 @@
 
 #define RESOURCES_TO_TRADER_RATIO 60
 
+empire_city cities[MAX_CITIES];
 
 void empire_city_clear_all(void)
 {
