@@ -1,0 +1,8 @@
+module CAugustus {
+    umbrella "../../../src"
+    link "SDL2"
+    link "SDL2_mixer"
+    link "png"
+    link "zlib"
+    link "expat"
+}
