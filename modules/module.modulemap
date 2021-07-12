@@ -1,5 +1,5 @@
 module CAugustus {
-    umbrella "."
+    umbrella "../src"
     link "SDL2"
     link "SDL2_mixer"
     link "png"
