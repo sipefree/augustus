@@ -51,7 +51,7 @@ let package = Package(
                 "./version.c"
             ],
             resources: [.copy("../assets")],
-            publicHeadersPath: "./swift/Modules/CAugustus",
+            publicHeadersPath: "../swift/Modules/CAugustus",
             cSettings: [
                 .headerSearchPath("."),
                 .headerSearchPath("../ext"),
