@@ -19,7 +19,7 @@ let package = Package(
     targets: [
         .target(
             name: "CAugustus",
-            dependencies: ["CSDL2"],
+            dependencies: ["CSDL2", "CPMurHash", "CTinyFileDialogs"],
             path: "./src",
             exclude: [
                 "./platform/android",
@@ -27,10 +27,9 @@ let package = Package(
                 "./platform/haiku",
                 "./platform/switch",
                 "./platform/vita",
-                "./platform/augustus.c"
+//                "./platform/augustus.c"
             ],
             sources: [
-                "../ext/tinyfiledialogs",
                 "./assets",
                 "./building",
                 "./city",
@@ -48,22 +47,37 @@ let package = Package(
                 "./sound",
                 "./translation",
                 "./widget",
-                "./window"
+                "./window",
+                "./version.c"
             ],
             resources: [.copy("../assets")],
-            publicHeadersPath: "modules",
+            publicHeadersPath: "./swift/Modules/CAugustus",
             cSettings: [
                 .headerSearchPath("."),
                 .headerSearchPath("../ext"),
                 .headerSearchPath("../ext/png")
             ],
             linkerSettings: [
-                
+                .linkedLibrary("png"),
+                .linkedLibrary("SDL2"),
+                .linkedLibrary("SDL2_Mixer"),
+                .linkedLibrary("expat"),
+                .linkedLibrary("z")
             ]),
+
+        .target(
+            name: "CPMurHash",
+            path: "./ext/PMurHash"
+        ),
+
+        .target(
+            name: "CTinyFileDialogs",
+            path: "./ext/tinyfiledialogs"
+        ),
         
         .systemLibrary(
             name: "CSDL2",
-            path: "./modules/CSDL2",
+            path: "./swift/Modules/CSDL2",
             pkgConfig: "sdl2",
             providers: [
                 .brew(["sdl2"]),

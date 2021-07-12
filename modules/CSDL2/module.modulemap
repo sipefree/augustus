@@ -1,4 +1,0 @@
-module CSDL2 {
-    umbrella header "CSDL2.h"
-    link "SDL2"
-}
