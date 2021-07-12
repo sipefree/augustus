@@ -62,7 +62,8 @@ let package = Package(
                 .linkedLibrary("SDL2"),
                 .linkedLibrary("SDL2_Mixer"),
                 .linkedLibrary("expat"),
-                .linkedLibrary("z")
+                .linkedLibrary("z"),
+                .unsafeFlags(["-unexported_symbol", "_main"])
             ]),
 
         .target(
