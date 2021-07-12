@@ -1,3 +1,12 @@
+----
+
+|NOTE|
+|----|
+|This fork packages upstream Augustus for the Swift Package Manager.|
+
+----
+
+
 # Augustus ![](res/julius_48.png)
 
 [![Github Actions](https://github.com/Keriew/augustus/workflows/Build%20Augustus/badge.svg)](https://github.com/Keriew/Augustus/actions)

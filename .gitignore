@@ -39,3 +39,10 @@ local.properties
 /android/play-publisher.json
 /android/augustus/src/main/play
 /android/julius/src/main/play
+
+# Swift PM
+.swiftpm
+Package.resolved
+/build
+/.build
+*.pyc
