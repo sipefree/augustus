@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
     name: "augustus",
+    platforms: [
+        .macOS(.v11)
+    ],
     products: [
         .library(
             name: "CAugustus",
@@ -20,7 +23,7 @@ let package = Package(
             path: "./src",
             exclude: [
                 "./platform/android",
-                "./platform/emscripten",
+//                "./platform/emscripten",
                 "./platform/haiku",
                 "./platform/switch",
                 "./platform/vita",
