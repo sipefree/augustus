@@ -26,8 +26,7 @@ let package = Package(
 //                "./platform/emscripten",
                 "./platform/haiku",
                 "./platform/switch",
-                "./platform/vita",
-//                "./platform/augustus.c"
+                "./platform/vita"
             ],
             sources: [
                 "./assets",
@@ -55,15 +54,15 @@ let package = Package(
             cSettings: [
                 .headerSearchPath("."),
                 .headerSearchPath("../ext"),
-                .headerSearchPath("../ext/png")
+                .headerSearchPath("../ext/png"),
+                .define("EXCLUDE_MAIN", to: "1")
             ],
             linkerSettings: [
                 .linkedLibrary("png"),
                 .linkedLibrary("SDL2"),
                 .linkedLibrary("SDL2_Mixer"),
                 .linkedLibrary("expat"),
-                .linkedLibrary("z"),
-                .unsafeFlags(["-unexported_symbol", "_main"])
+                .linkedLibrary("z")
             ]),
 
         .target(

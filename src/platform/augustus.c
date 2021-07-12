@@ -559,6 +559,7 @@ static void teardown(void)
     teardown_logging();
 }
 
+#ifndef EXCLUDE_MAIN
 int main(int argc, char **argv)
 {
     julius_args args;
@@ -571,3 +572,4 @@ int main(int argc, char **argv)
     teardown();
     return 0;
 }
+#endif // EXCLUDE_MAIN
