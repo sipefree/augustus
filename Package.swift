@@ -26,7 +26,8 @@ let package = Package(
 //                "./platform/emscripten",
                 "./platform/haiku",
                 "./platform/switch",
-                "./platform/vita"
+                "./platform/vita",
+                "./CAugustus.apinotes"
             ],
             sources: [
                 "./assets",
@@ -47,7 +48,8 @@ let package = Package(
                 "./translation",
                 "./widget",
                 "./window",
-                "./version.c"
+                "./version.c",
+                "./CAugustus.swift"
             ],
             resources: [.copy("../assets")],
             publicHeadersPath: "./",

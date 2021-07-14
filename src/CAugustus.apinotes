@@ -1,0 +1,9 @@
+Name: CAugustus
+Functions:
+- Name: assets_get_image
+  SwiftName: AssetsGetImage(id:)
+  NullabilityOfRet: O
+Typedefs:
+- Name: building
+  SwiftName: Building
+  
